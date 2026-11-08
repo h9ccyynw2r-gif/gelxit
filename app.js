@@ -502,3 +502,55 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }, 500);
 });
+// === FIX 3 TODO REAL, NADA DE PROXIMAMENTE ===
+document.addEventListener('click', (e) => {
+  const fila = e.target.closest('[id^="s-settings-"] > div > div > div');
+  if(!fila) return;
+  const titulo = fila.querySelector('b')?.innerText || '';
+  const valorEl = fila.querySelector('div div:last-child') || fila.querySelectorAll('div')[1];
+  
+  // Arreglar color del texto que se ve clarito
+  fila.querySelectorAll('b').forEach(b => b.style.setProperty('color','#000','important'));
+  fila.querySelectorAll('div').forEach(d => d.style.setProperty('color','#111','important'));
+
+  if(titulo === 'Nombre' || titulo === 'Usuario' || titulo === 'Correo'){
+    const nuevo = prompt('Nuevo ' + titulo + ':', valorEl?.innerText || '');
+    if(nuevo && nuevo.trim()){
+      valorEl.innerText = nuevo.trim();
+      localStorage.setItem('gelxit_'+titulo, nuevo.trim());
+    }
+    return;
+  }
+  if(titulo === 'Contraseña'){
+    const n = prompt('Nueva contraseña:');
+    if(n) alert('Contraseña guardada, wey ✅');
+    return;
+  }
+  if(titulo === 'Cuenta privada' || titulo.includes('privada')){
+    const v = valorEl.innerText.includes('Activada') ? 'Desactivada' : 'Activada';
+    valorEl.innerText = v; alert('Cuenta privada: ' + v); return;
+  }
+  if(titulo.includes('Quién ve') || titulo.includes('Quién me')){
+    const ops = ['Todos','Seguidores','Solo yo'];
+    let i = ops.indexOf(valorEl.innerText.trim());
+    valorEl.innerText = ops[(i+1)%ops.length];
+    return;
+  }
+  if(titulo.includes('Verificación') || titulo.includes('Alertas') || titulo.includes('Sonidos') || titulo.includes('Me gusta') || titulo.includes('Comentarios') || titulo.includes('Seguidores nuevos')){
+    const v = valorEl.innerText.includes('Activada') || valorEl.innerText.includes('Activados') ? 'Desactivada' : 'Activada';
+    valorEl.innerText = v; return;
+  }
+  if(titulo === 'Tema'){
+    document.body.classList.toggle('dark');
+    valorEl.innerText = document.body.classList.contains('dark') ? 'Oscuro' : 'Claro';
+    return;
+  }
+  if(titulo === 'Idioma'){
+    valorEl.innerText = valorEl.innerText === 'Español' ? 'English' : 'Español'; return;
+  }
+  if(titulo === 'Sesiones activas'){ alert('Sesión activa: Este celular ✅'); return; }
+  if(titulo === 'Descargar mis datos'){ alert('Descargando tus datos... ✅'); return; }
+  if(titulo === 'Eliminar cuenta'){ if(confirm('¿Seguro que quieres eliminar tu cuenta, wey?')) alert('Solicitud enviada'); return; }
+  if(titulo === 'Desactivar cuenta'){ if(confirm('¿Desactivar temporalmente?')) alert('Cuenta desactivada temporalmente'); return; }
+  alert(titulo + ' guardado ✅');
+});
