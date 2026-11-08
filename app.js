@@ -482,26 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
   poner('s-settings-security','Seguridad', fila('Verificación en 2 pasos','Activar')+fila('Sesiones activas','Revisar')+fila('Alertas de inicio de sesión','Activadas'));
   poner('s-settings-notifications','Notificaciones', fila('Me gusta','Activadas')+fila('Comentarios','Activadas')+fila('Seguidores nuevos','Activadas'));
   poner('s-settings-personalization','Personalización', fila('Tema','Claro / Oscuro')+fila('Idioma','Español')+fila('Sonidos','Activados'));
-  poner('s-settings-management','Gestión', fila('Descargar mis datos','Solicitar')+fila('Desactivar cuenta','Temporal')+fila('Eliminar cuenta','Permanente'));
-});
-// === FIX 2 BOTONES QUE SI REACCIONAN ===
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    document.querySelectorAll('[id^="s-settings-"] div').forEach(d => {
-      d.style.color = '#111';
-      const b = d.querySelector('b');
-      if(b) b.style.color = '#000';
-    });
-    document.querySelectorAll('[id^="s-settings-"] > div > div > div').forEach(fila => {
-      fila.style.cursor = 'pointer';
-      fila.onclick = () => {
-        const t = fila.querySelector('b')?.innerText || 'Opción';
-        if(typeof toast === 'function') toast(t + ' - Próximamente, wey 😉');
-        else alert(t);
-      };
-    });
-  }, 500);
-});
+  poner('s-settings-management','Gestión', fila('Descargar mis datos','Solicitar')+fila('Desactivar cuenta','Temporal')+fila('Eliminar cuenta','
 // === FIX 3 TODO REAL, NADA DE PROXIMAMENTE ===
 document.addEventListener('click', (e) => {
   const fila = e.target.closest('[id^="s-settings-"] > div > div > div');
