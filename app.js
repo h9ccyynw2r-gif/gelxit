@@ -469,3 +469,53 @@ async function respH(){
   const r=await sb.from('messages').insert({chat_id:c,user_id:me.id,texto:'Respuesta a tu historia: '+t});if(err(r))return;
   $('#svr').value='';toast('Respuesta enviada');
 }
+// === CONFIG EN SUPABASE - NO LOCAL ===
+async function loadConfig(){
+  if(!me) return;
+  const {data} = await sb.from('user_settings').select('*').eq('user_id', me.id).maybeSingle();
+  let cfg = data;
+  if(!cfg){
+    const {data:created} = await sb.from('user_settings').insert({user_id: me.id}).select().single();
+    cfg = created || {tema:'dark', notificaciones:true, perfil_publico:true, sonido:true};
+  }
+  // Aplica tema guardado
+  document.documentElement.dataset.theme = cfg.tema || 'dark';
+  // Si tienes switches en tu HTML, los marca solos si existen
+  const setChk = (id, val) => { const el = document.getElementById(id); if(el) el.checked = !!val; };
+  setChk('cfg-notif', cfg.notificaciones);
+  setChk('cfg-publico', cfg.perfil_publico);
+  setChk('cfg-sonido', cfg.sonido);
+  window.__cfg = cfg;
+  return cfg;
+}
+
+async function saveConfig(patch){
+  if(!me) return;
+  const {error} = await sb.from('user_settings').upsert({user_id: me.id, ...patch, updated_at: new Date().toISOString()});
+  if(error){ toast(error.message); return; }
+  window.__cfg = {...(window.__cfg||{}), ...patch};
+  toast('Configuración guardada en Supabase');
+}
+
+// Tema ahora sí se guarda en Supabase
+const _temaOriginal = tema;
+tema = async function(){
+  _temaOriginal();
+  const nuevo = document.documentElement.dataset.theme;
+  await saveConfig({tema: nuevo});
+}
+
+// Engancha loadConfig cuando entras, sin romper tu start()
+const _startOriginal = start;
+start = async function(u){
+  const ok = await _startOriginal(u);
+  if(ok) await loadConfig();
+  return ok;
+}
+
+// Si tienes botones/switches con estos ids en tu HTML, ya jalan solos
+document.addEventListener('change', (e)=>{
+  if(e.target.id === 'cfg-notif') saveConfig({notificaciones: e.target.checked});
+  if(e.target.id === 'cfg-publico') saveConfig({perfil_publico: e.target.checked});
+  if(e.target.id === 'cfg-sonido') saveConfig({sonido: e.target.checked});
+});
