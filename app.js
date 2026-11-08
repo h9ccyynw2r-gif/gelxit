@@ -484,3 +484,21 @@ document.addEventListener('DOMContentLoaded', () => {
   poner('s-settings-personalization','Personalización', fila('Tema','Claro / Oscuro')+fila('Idioma','Español')+fila('Sonidos','Activados'));
   poner('s-settings-management','Gestión', fila('Descargar mis datos','Solicitar')+fila('Desactivar cuenta','Temporal')+fila('Eliminar cuenta','Permanente'));
 });
+// === FIX 2 BOTONES QUE SI REACCIONAN ===
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.querySelectorAll('[id^="s-settings-"] div').forEach(d => {
+      d.style.color = '#111';
+      const b = d.querySelector('b');
+      if(b) b.style.color = '#000';
+    });
+    document.querySelectorAll('[id^="s-settings-"] > div > div > div').forEach(fila => {
+      fila.style.cursor = 'pointer';
+      fila.onclick = () => {
+        const t = fila.querySelector('b')?.innerText || 'Opción';
+        if(typeof toast === 'function') toast(t + ' - Próximamente, wey 😉');
+        else alert(t);
+      };
+    });
+  }, 500);
+});
