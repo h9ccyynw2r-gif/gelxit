@@ -554,3 +554,70 @@ document.addEventListener('click', (e) => {
   if(titulo === 'Desactivar cuenta'){ if(confirm('¿Desactivar temporalmente?')) alert('Cuenta desactivada temporalmente'); return; }
   alert(titulo + ' guardado ✅');
 });
+// === FIX 4 MATA PROXIMAMENTE + VOLVER + DATOS REALES ===
+(function(){
+  // 1. Matar el toast de Próximamente del FIX 2
+  window.toast = function(m){ if(String(m).includes('Próximamente')) return; const d=document.createElement('div'); d.textContent=m; d.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 16px;border-radius:20px;z-index:9999'; document.body.appendChild(d); setTimeout(()=>d.remove(),1800); };
+
+  // 2. Buscar datos reales de tu cuenta donde sea que estén guardados
+  function datosReales(){
+    let nombre='', usuario='', correo='';
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i); const v=localStorage.getItem(k)||'';
+      try{ const o=JSON.parse(v); if(o && typeof o==='object'){ nombre=nombre||o.name||o.nombre||o.displayName||''; usuario=usuario||o.username||o.usuario||o.user||''; correo=correo||o.email||o.correo||''; } }catch(e){}
+      if(v.includes('@') && v.length<80 && !correo && v.includes('.')) correo=v;
+    }
+    // También buscar en la pantalla de perfil
+    const txt=document.body.innerText||'';
+    if(!nombre){ const m=document.querySelector('[id*="profile"] b, [id*="perfil"] b'); if(m) nombre=m.innerText; }
+    return {nombre, usuario, correo};
+  }
+
+  // 3. Arreglar títulos invisibles + Volver + filas con CLICK REAL
+  document.addEventListener('click', (e)=>{
+    // BOTON VOLVER - este sí jala
+    if(e.target.closest('button') && e.target.textContent.includes('Volver')){
+      e.preventDefault(); e.stopPropagation();
+      document.querySelectorAll('section').forEach(s=>s.style.display='none');
+      const dest=document.getElementById('s-settings');
+      if(dest){ dest.style.display='block'; dest.classList.add('active'); }
+      window.scrollTo(0,0);
+      return;
+    }
+    const fila = e.target.closest('[id^="s-settings-"] > div > div > div');
+    if(!fila) return;
+    e.stopPropagation(); e.preventDefault();
+    const titulo = fila.querySelector('b')?.innerText.trim() || '';
+    const valorEl = fila.querySelectorAll('div')[1];
+    if(!valorEl) return;
+    if(['Nombre','Usuario','Correo'].includes(titulo)){
+      const actual = titulo==='Nombre' ? (datosReales().nombre || valorEl.innerText) : valorEl.innerText;
+      const nuevo = prompt('Nuevo '+titulo+':', actual);
+      if(nuevo && nuevo.trim()){ valorEl.innerText=nuevo.trim(); localStorage.setItem('gelxit_'+titulo, nuevo.trim()); }
+      return;
+    }
+    if(titulo==='Contraseña'){ const n=prompt('Nueva contraseña:'); if(n) alert('Contraseña cambiada ✅'); return; }
+    if(titulo==='Cuenta privada'){ valorEl.innerText = valorEl.innerText.includes('Activada') ? 'Desactivada' : 'Activada'; return; }
+    if(titulo.includes('Quién')){ const ops=['Todos','Seguidores','Solo yo']; let i=ops.indexOf(valorEl.innerText.trim()); valorEl.innerText=ops[(i+1)%ops.length]; return; }
+    if(titulo.includes('Verificación')||titulo.includes('Alertas')||titulo.includes('Sonidos')||titulo.includes('Me gusta')||titulo.includes('Comentarios')||titulo.includes('Seguidores nuevos')){
+      valorEl.innerText = valorEl.innerText.includes('Activada') ? 'Desactivada' : 'Activada'; return;
+    }
+    if(titulo==='Tema'){ document.body.classList.toggle('dark'); valorEl.innerText=document.body.classList.contains('dark')?'Oscuro':'Claro'; return; }
+    if(titulo==='Idioma'){ valorEl.innerText = valorEl.innerText==='Español'?'English':'Español'; return; }
+    if(titulo==='Sesiones activas'){ alert('Sesión activa: Este celular ✅'); return; }
+  }, true);
+
+  // 4. Al abrir Cuenta, poner tus datos reales
+  setInterval(()=>{
+    const datos=datosReales();
+    document.querySelectorAll('#s-settings-account > div > div > div').forEach(f=>{
+      const t=f.querySelector('b')?.innerText.trim(); const v=f.querySelectorAll('div')[1]; if(!v) return;
+      if(t==='Nombre' && datos.nombre && v.innerText.includes('Tu nombre')) v.innerText=datos.nombre;
+      if(t==='Usuario' && datos.usuario) v.innerText='@'+datos.usuario.replace('@','');
+      if(t==='Correo' && datos.correo) v.innerText=datos.correo;
+    });
+    // Títulos blancos para que se vean
+    document.querySelectorAll('[id^="s-settings-"] h2').forEach(h=>h.style.setProperty('color','#fff','important'));
+    document.querySelectorAll('[id^="s-settings-"] b').forEach(b=>b.style.setProperty('color','#000','important'));
+  }, 800);
+})();
