@@ -469,3 +469,18 @@ async function respH(){
   const r=await sb.from('messages').insert({chat_id:c,user_id:me.id,texto:'Respuesta a tu historia: '+t});if(err(r))return;
   $('#svr').value='';toast('Respuesta enviada');
 }
+// === FIX SETTINGS HOY QUEDA ===
+document.addEventListener('DOMContentLoaded', () => {
+  const poner = (id, titulo, html) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.innerHTML = `<div style="padding:16px"><button onclick="showSection('s-settings')" style="background:none;border:none;color:#1877f2;font-weight:700;margin-bottom:12px">← Volver</button><h2 style="font-size:22px;margin:0 0 14px">${titulo}</h2>${html}</div>`;
+  };
+  const fila = (t,d) => `<div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.08)"><div><b>${t}</b><div style="font-size:13px;color:#666">${d}</div></div><span style="color:#ccc">›</span></div>`;
+  poner('s-settings-account','Cuenta', fila('Nombre','Tu nombre de perfil')+fila('Usuario','@tu_usuario')+fila('Correo','tu@correo.com')+fila('Contraseña','Cambiar contraseña'));
+  poner('s-settings-privacy','Privacidad', fila('Quién ve mis publicaciones','Todos')+fila('Quién me puede escribir','Todos')+fila('Cuenta privada','Desactivada'));
+  poner('s-settings-security','Seguridad', fila('Verificación en 2 pasos','Activar')+fila('Sesiones activas','Revisar')+fila('Alertas de inicio de sesión','Activadas'));
+  poner('s-settings-notifications','Notificaciones', fila('Me gusta','Activadas')+fila('Comentarios','Activadas')+fila('Seguidores nuevos','Activadas'));
+  poner('s-settings-personalization','Personalización', fila('Tema','Claro / Oscuro')+fila('Idioma','Español')+fila('Sonidos','Activados'));
+  poner('s-settings-management','Gestión', fila('Descargar mis datos','Solicitar')+fila('Desactivar cuenta','Temporal')+fila('Eliminar cuenta','Permanente'));
+});
