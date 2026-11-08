@@ -519,3 +519,133 @@ document.addEventListener('change', (e)=>{
   if(e.target.id === 'cfg-publico') saveConfig({perfil_publico: e.target.checked});
   if(e.target.id === 'cfg-sonido') saveConfig({sonido: e.target.checked});
 });
+// === CONFIG REAL GELXIT - SUPABASE ===
+let __cfgCache = null;
+async function getCfg(){
+  if(!me) return null;
+  if(__cfgCache) return __cfgCache;
+  const {data} = await sb.from('user_settings').select('*').eq('user_id', me.id).maybeSingle();
+  if(data){ __cfgCache = data; return data; }
+  const {data:created} = await sb.from('user_settings').insert({user_id: me.id}).select().single();
+  __cfgCache = created || {};
+  return __cfgCache;
+}
+async function saveCfg(patch){
+  if(!me) return;
+  __cfgCache = {...(__cfgCache||{}), ...patch};
+  const {error} = await sb.from('user_settings').upsert({user_id: me.id, ...patch, updated_at: new Date().toISOString()});
+  if(error) return toast(error.message);
+  toast('Guardado en Supabase');
+}
+
+function sw(label, key, val, desc){
+  return `<label style="display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid #ffffff14;cursor:pointer">
+    <span><b style="display:block">${label}</b><small style="opacity:.65">${desc}</small></span>
+    <input type="checkbox" data-cfg="${key}" ${val?'checked':''} style="width:44px;height:24px;accent-color:#6a00f4">
+  </label>`;
+}
+function inp(label, key, val, ph){
+  return `<label style="display:block;margin:12px 0"><b>${label}</b>
+  <input data-cfg-input="${key}" value="${String(val??'').replace(/"/g,'')}" placeholder="${ph}" style="width:100%;margin-top:6px;padding:12px;border-radius:12px;background:#00000040;color:#fff;border:1px solid #ffffff20"></label>`;
+}
+function btn(label, id, color){
+  return `<button id="${id}" style="width:100%;padding:13px;border:0;border-radius:12px;background:${color||'#6a00f4'};color:#fff;font-weight:700;margin-top:12px">${label}</button>`;
+}
+
+async function renderRealSettings(){
+  const placeholder = [...document.querySelectorAll('*')].find(el => el.textContent?.includes('Esta sección está lista para conectar'));
+  if(!placeholder) return;
+  const title = (document.querySelector('h1')?.textContent || document.title || '').trim();
+  const cfg = await getCfg() || {};
+  const prof2 = prof || {};
+  const box = placeholder.closest('div') || placeholder;
+  let html = '';
+
+  if(title.includes('Cuenta')){
+    html = `<p style="opacity:.7">Administra los datos básicos asociados a tu cuenta.</p>
+    <p><b>Email:</b> ${E(me?.email||'')}</p>
+    <p><b>Miembro desde:</b> ${new Date(me?.created_at||Date.now()).toLocaleDateString('es-MX')}</p>
+    ${btn('Cerrar sesión','cfg-logout','#ef4444')}
+    ${btn('Eliminar mi cuenta','cfg-delete','#7f1d1d')}`;
+  }
+  if(title.includes('Privacidad')){
+    html = `<p style="opacity:.7">Define cómo se comparte tu contenido y quién puede encontrarte.</p>
+    ${sw('Perfil público','perfil_publico',cfg.perfil_publico,'Si lo apagas, nadie puede ver tu perfil')}
+    ${sw('Permitir que me encuentren','permitir_busqueda',cfg.permitir_busqueda,'Apareces en búsqueda y sugerencias')}
+    ${sw('Permitir mensajes','permitir_mensajes',cfg.permitir_mensajes,'Otros usuarios pueden escribirte')}
+    ${sw('Mostrar mi actividad','mostrar_actividad',cfg.mostrar_actividad,'Se muestra si estás activo')}`;
+  }
+  if(title.includes('Seguridad')){
+    html = `<p style="opacity:.7">Revisa el acceso y protege tu cuenta.</p>
+    ${inp('Nueva contraseña','new-pass','','Mínimo 6 caracteres')}
+    ${btn('Cambiar contraseña','cfg-pass')}
+    ${btn('Cerrar sesión en este dispositivo','cfg-logout2','#ef4444')}`;
+  }
+  if(title.includes('Notificaciones')){
+    html = `<p style="opacity:.7">Configura los avisos que quieres recibir.</p>
+    ${sw('Me gusta','notif_likes',cfg.notif_likes,'Cuando alguien le da like a tu post')}
+    ${sw('Comentarios','notif_comentarios',cfg.notif_comentarios,'Cuando comentan tus posts')}
+    ${sw('Nuevos seguidores','notif_seguidores',cfg.notif_seguidores,'Cuando alguien te sigue')}
+    ${sw('Mensajes','notif_mensajes',cfg.notif_mensajes,'Cuando te llega un mensaje')}`;
+  }
+  if(title.includes('Personalización')){
+    html = `<p style="opacity:.7">Ajusta la apariencia y la experiencia de Gelxit.</p>
+    <label style="display:block;margin:12px 0"><b>Tema</b>
+    <select data-cfg-select="tema" style="width:100%;padding:12px;border-radius:12px;background:#111;color:#fff;margin-top:6px">
+      <option value="dark" ${cfg.tema==='dark'?'selected':''}>Oscuro</option>
+      <option value="light" ${cfg.tema==='light'?'selected':''}>Claro</option>
+    </select></label>
+    <label style="display:block;margin:12px 0"><b>Color de acento</b>
+    <input type="color" data-cfg-select="color_acento" value="${cfg.color_acento||'#6a00f4'}" style="width:100%;height:44px"></label>
+    ${sw('Reproducción automática','autoplay',cfg.autoplay,'Los videos se reproducen solos')}`;
+  }
+  if(title.includes('Gestión del perfil')){
+    html = `<p style="opacity:.7">Edita tu información pública y la identidad de tu perfil.</p>
+    ${inp('Nombre','nombre',prof2.nombre,'Tu nombre')}
+    ${inp('Usuario','username',prof2.username,'@usuario')}
+    ${inp('Biografía','bio',prof2.bio,'Cuéntanos de ti...')}
+    ${btn('Guardar perfil','cfg-save-perfil')}`;
+  }
+  if(!html) return;
+  box.innerHTML = html;
+  box.style.display = 'block';
+  // Aplica tema y color
+  if(cfg.tema) document.documentElement.dataset.theme = cfg.tema;
+  if(cfg.color_acento) document.documentElement.style.setProperty('--accent', cfg.color_acento);
+}
+
+document.addEventListener('click', async (e)=>{
+  if(e.target.id === 'cfg-logout' || e.target.id === 'cfg-logout2'){
+    await sb.auth.signOut(); location.reload();
+  }
+  if(e.target.id === 'cfg-delete'){
+    if(!confirm('¿Seguro que quieres eliminar tu cuenta? Esto borra tu perfil.')) return;
+    await sb.from('profiles').delete().eq('id', me.id);
+    await sb.auth.signOut(); location.reload();
+  }
+  if(e.target.id === 'cfg-pass'){
+    const pass = document.querySelector('[data-cfg-input="new-pass"]')?.value;
+    if(!pass || pass.length < 6) return toast('Pon una contraseña de mínimo 6');
+    const {error} = await sb.auth.updateUser({password: pass});
+    if(error) return toast(error.message);
+    toast('Contraseña cambiada en Supabase');
+  }
+  if(e.target.id === 'cfg-save-perfil'){
+    const nombre = document.querySelector('[data-cfg-input="nombre"]')?.value;
+    const username = document.querySelector('[data-cfg-input="username"]')?.value;
+    const bio = document.querySelector('[data-cfg-input="bio"]')?.value;
+    const {error} = await sb.from('profiles').update({nombre, username, bio}).eq('id', me.id);
+    if(error) return toast(error.message);
+    toast('Perfil guardado en Supabase');
+    location.reload();
+  }
+});
+document.addEventListener('change', async (e)=>{
+  const k = e.target.dataset.cfg;
+  if(k){ await saveCfg({[k]: e.target.checked}); return; }
+  const ks = e.target.dataset.cfgSelect;
+  if(ks){ await saveCfg({[ks]: e.target.value}); if(ks==='tema') document.documentElement.dataset.theme = e.target.value; }
+});
+
+// Revisa cada que cambias de pantalla
+setInterval(renderRealSettings, 500);
