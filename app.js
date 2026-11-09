@@ -1,10 +1,18 @@
-// FIX: Tapar badge de Netlify Drop y subir barra de chat
+// === SQL PARA SUPABASE (corre esto 1 vez, no va en app.js) ===
+// alter table profiles add column if not exists ban_hasta timestamptz;
+// alter table profiles add column if not exists ban_motivo text;
+
+// FIX: Scroll todo + Chat pegado sin hueco negro
 (function(){
   const s=document.createElement('style');
   s.textContent=`
     a[href*="netlify.com"], a[href*="netlify.app/?"], iframe[src*="netlify"], [id*="netlify" i], [class*="netlify" i]{display:none !important;}
-    #inp{padding-bottom:95px !important; position:relative !important; z-index:9999 !important;}
-    #s-chat{padding-bottom:20px !important;}
+    html,body{height:auto !important; overflow-y:auto !important; overflow-x:hidden !important; -webkit-overflow-scrolling:touch !important;}
+    .s, .screen, section{overflow-y:auto !important; -webkit-overflow-scrolling:touch !important; padding-bottom:90px !important; min-height:100dvh !important;}
+    #s-chat{display:flex !important; flex-direction:column !important; height:100dvh !important; min-height:100dvh !important; max-height:100dvh !important; overflow:hidden !important; padding-bottom:0 !important;}
+    #msgs{flex:1 !important; overflow-y:auto !important; -webkit-overflow-scrolling:touch !important; padding-bottom:12px !important;}
+    #inp{position:sticky !important; bottom:0 !important; padding:10px 10px calc(10px + env(safe-area-inset-bottom)) !important; margin:0 !important; background:#111 !important; z-index:9999 !important; display:flex !important; gap:8px !important; align-items:center !important;}
+    #inp input{flex:1 !important; min-width:0 !important;}
   `;
   document.head.appendChild(s);
 })();
@@ -79,7 +87,6 @@ async function login(){
   if(error)return toast(error.message);
   if(await start(data.user))go(prof.gustos?.length?'feed':'onb');
 }
-
 async function recoverPassword(){
   const email=$('#recoverEmail').value.trim();
   if(!email)return toast('Escribe tu correo');
@@ -97,10 +104,7 @@ async function updatePassword(){
   if(data.user){await start(data.user);go('feed');toast('Contraseña actualizada');}
 }
 sb.auth.onAuthStateChange((event,session)=>{
-  if(event==='PASSWORD_RECOVERY'){
-    me=session?.user||me;
-    go('reset');
-  }
+  if(event==='PASSWORD_RECOVERY'){ me=session?.user||me; go('reset'); }
 });
 async function start(u){
   me=u;
@@ -202,9 +206,6 @@ async function loadCirc(){const r=await sb.from('circulos').select('*').eq('user
 function circList(){$('#circList').innerHTML=CIRC.map(c=>`<div class="card p-4 flex items-center gap-3"><span class="text-3xl">${svg('spark')}</span><div class="flex-1"><b>${E(c.nombre)}</b><div class="text-sm" style="color:var(--mut)">${c.miembros||0} personas</div></div><button class="pill" data-c="${E(c.nombre)}" onclick="pc=this.dataset.c;go('create')">Subir aquí</button></div>`).join('')}
 async function newCirc(){const n=(prompt('Nombre del círculo')||'').trim();if(!n)return;const r=await sb.from('circulos').insert({user_id:me.id,nombre:n,miembros:0});if(err(r))return;await loadCirc();circList()}
 
-/* ---------- PERFIL ---------- */
-/* Perfil principal se define en la sección v2 más abajo. */
-
 /* ---------- CHAT (messages + Realtime) ---------- */
 async function chats(){
   const m=await sb.from('chat_members').select('chat_id').eq('user_id',me.id);if(err(m))return;
@@ -273,7 +274,7 @@ function subRT(){
     else if($('#s-inbox').classList.contains('on'))chats();
   }).subscribe();
 }
-setInterval(()=>{if(me&&cur&&$('#s-chat').classList.contains('on'))loadMsgs(true)},5000); // respaldo si Realtime no está activo
+setInterval(()=>{if(me&&cur&&$('#s-chat').classList.contains('on'))loadMsgs(true)},5000);
 
 /* ================= v2: Panel de Dueño, baneo, perfil/banner e historias ================= */
 let USERS=[],ST={},LP={},SV={l:[],i:0,t:null};
@@ -303,7 +304,17 @@ async function start(u){
     p=r.data;
     await sb.from('circulos').insert(['Familia','Escuela','Compas','Trabajo'].map(nombre=>({user_id:u.id,nombre,miembros:0})));
   }
-  if(p.baneado){await sb.auth.signOut();me=prof=null;go('ban');return false}
+  // Si el baneo por días ya caducó, se desbanea solo
+  if(p.baneado && p.ban_hasta && new Date(p.ban_hasta) < new Date()){
+    await sb.from('profiles').update({baneado:false, ban_hasta:null, ban_motivo:null}).eq('id', u.id);
+    p.baneado = false; p.ban_hasta = null;
+  }
+  if(p.baneado){
+    // Guardamos el motivo para mostrarlo en la pantalla de baneo
+    localStorage['ban_motivo'] = p.ban_motivo || '';
+    localStorage['ban_hasta'] = p.ban_hasta || 'permanente';
+    await sb.auth.signOut();me=prof=null;go('ban');return false
+  }
   prof=p;picks=Array.isArray(p.gustos)?p.gustos:[];
   try{pins=JSON.parse(localStorage['pins'+u.id]||'[]')}catch(e){pins=[]}
   await loadCirc();subRT();
@@ -311,7 +322,12 @@ async function start(u){
   return true;
 }
 
-/* ---------- PANEL DE DUEÑO ---------- */
+/* ---------- PANEL DE DUEÑO + BANEO POR TIEMPO ---------- */
+function banLabel(u){
+  if(!u.baneado) return '';
+  if(!u.ban_hasta) return ' · <span style="color:var(--danger)">BANEADO PERMA</span>';
+  return ` · <span style="color:var(--danger)">Baneado hasta ${new Date(u.ban_hasta).toLocaleDateString('es-MX')} ${new Date(u.ban_hasta).toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'})}</span>${u.ban_motivo?` · Motivo: ${E(u.ban_motivo)}`:''}`;
+}
 async function adminList(){
   if(!isAdmin())return;
   const q=($('#aq').value||'').trim().replace(/^@/,'').toLowerCase();
@@ -319,17 +335,53 @@ async function adminList(){
   if(q)r=r.ilike('username','%'+q+'%');
   const {data,error}=await r;if(error)return toast(error.message);
   USERS=data;
-  $('#alist').innerHTML=data.map(u=>`<div class="card p-3 flex flex-col gap-2"><div class="flex items-center gap-3">${av(u,44)}<div class="flex-1 min-w-0"><b>${E(u.nombre||u.username)}</b> ${vbadge(u)}<div class="text-sm" style="color:var(--mut)">@${E(u.username)}${u.baneado?' · <span style="color:var(--danger)">baneado</span>':''}</div></div></div>
+  $('#alist').innerHTML=data.map(u=>`<div class="card p-3 flex flex-col gap-2"><div class="flex items-center gap-3">${av(u,44)}<div class="flex-1 min-w-0"><b>${E(u.nombre||u.username)}</b> ${vbadge(u)}<div class="text-sm" style="color:var(--mut)">@${E(u.username)}${banLabel(u)}</div></div></div>
    <div class="flex flex-wrap gap-2">
     <button class="pill" onclick="adm('${u.id}','verificado_identidad')">${u.verificado_identidad?'Quitar verificación':'Verificar'}</button>
     <button class="pill" onclick="adm('${u.id}','verificado_premium')">${u.verificado_premium?'Quitar Premium':'Dar Premium'}</button>
-    <button class="pill" onclick="adm('${u.id}','baneado')">${u.baneado?'Desbanear':'Banear'}</button>
-    <button class="pill" onclick="verUser('${u.id}')">Ver perfil</button></div></div>`).join('')||'<p class="text-sm" style="color:var(--mut)">Sin resultados.</p>';
+    <button class="pill" onclick="verUser('${u.id}')">Ver perfil</button></div>
+   <div style="background:#00000030;border:1px solid #ffffff14;border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px">
+    <b style="font-size:13px">🔨 Banear a @${E(u.username)}</b>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <select id="ban-dias-${u.id}" style="flex:1;padding:10px;border-radius:10px;background:#111;color:#fff;border:1px solid #ffffff20">
+        <option value="1">1 día</option><option value="3">3 días</option><option value="7" selected>7 días</option><option value="30">30 días</option><option value="0">PERMANENTE</option><option value="custom">Escribir días...</option>
+      </select>
+      <input id="ban-custom-${u.id}" type="number" min="1" placeholder="Días" style="width:80px;padding:10px;border-radius:10px;background:#111;color:#fff;border:1px solid #ffffff20;display:none">
+      <input id="ban-motivo-${u.id}" placeholder="Motivo (opcional)" style="flex:1;padding:10px;border-radius:10px;background:#111;color:#fff;border:1px solid #ffffff20">
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="pill" style="flex:1;background:#ef4444;color:#fff;border:0" onclick="banUser('${u.id}')">Banear</button>
+      ${u.baneado?`<button class="pill" style="flex:1;background:#22c55e;color:#fff;border:0" onclick="unbanUser('${u.id}')">Desbanear</button>`:''}
+    </div>
+   </div></div>`).join('')||'<p class="text-sm" style="color:var(--mut)">Sin resultados.</p>';
+  // Mostrar/ocultar el input de días custom
+  $$('select[id^="ban-dias-"]').forEach(sel=>{
+    sel.onchange=()=>{ const id=sel.id.replace('ban-dias-',''); const inp=document.getElementById('ban-custom-'+id); if(inp) inp.style.display = sel.value==='custom' ? 'block' : 'none'; };
+  });
+}
+async function banUser(id){
+  if(!isAdmin())return toast('No tienes permiso');
+  if(id===me.id)return toast('No puedes banearte a ti');
+  const u=USERS.find(x=>String(x.id)===String(id)); if(!u) return;
+  const sel=document.getElementById('ban-dias-'+id);
+  let dias = sel ? sel.value : '7';
+  if(dias==='custom'){ dias = document.getElementById('ban-custom-'+id)?.value || ''; if(!dias || Number(dias)<1) return toast('Escribe cuántos días'); }
+  const motivo=document.getElementById('ban-motivo-'+id)?.value?.trim() || '';
+  const esPerma = String(dias)==='0';
+  const hasta = esPerma ? null : new Date(Date.now() + Number(dias)*864e5).toISOString();
+  if(!confirm(`¿Banear a @${u.username} ${esPerma?'PERMANENTE':('por '+dias+' días')}?${motivo?'\nMotivo: '+motivo:''}`)) return;
+  const r=await sb.from('profiles').update({baneado:true, ban_hasta:hasta, ban_motivo:motivo||null}).eq('id',id).select(); if(err(r))return;
+  if(!r.data.length)return toast('Sin permiso: corre el SQL de ban_hasta en Supabase');
+  toast(esPerma?'Baneado permanente':'Baneado por '+dias+' días'); adminList();
+}
+async function unbanUser(id){
+  if(!isAdmin())return;
+  const r=await sb.from('profiles').update({baneado:false, ban_hasta:null, ban_motivo:null}).eq('id',id).select(); if(err(r))return;
+  toast('Desbaneado'); adminList();
 }
 async function adm(id,col){
   if(!isAdmin())return toast('No tienes permiso');
   const u=USERS.find(x=>String(x.id)===String(id));if(!u)return;const v=!u[col];
-  if(col==='baneado'&&v){if(id===me.id)return toast('No puedes banearte a ti');if(!confirm(`¿Seguro que quieres banear a @${u.username}?`))return}
   const r=await sb.from('profiles').update({[col]:v}).eq('id',id).select();if(err(r))return;
   if(!r.data.length)return toast('Sin permiso: corre supabase.sql en Supabase');
   toast('Listo');adminList();
@@ -390,7 +442,7 @@ async function saveEdit(){
   Object.assign(prof,d);$('#eaf').value='';$('#ebf').value='';toast('Perfil actualizado');go('profile');
 }
 
-/* ---------- AUDIO (iPhone: graba en audio/mp4) ---------- */
+/* ---------- AUDIO ---------- */
 function setMicState(recording){const e=$('#mic');if(e)e.innerHTML=recording?svg('close'):svg('mic')}
 async function rec(){
   if(recd){recd.stop();return}
@@ -469,155 +521,92 @@ async function respH(){
   const r=await sb.from('messages').insert({chat_id:c,user_id:me.id,texto:'Respuesta a tu historia: '+t});if(err(r))return;
   $('#svr').value='';toast('Respuesta enviada');
 }
-// === CONFIG REAL GELXIT V6 - UN SOLO BLOQUE, BORRA TODO LO ANTERIOR ===
-let __cfgCache = null;
+
+// === CONFIG REAL GELXIT V7 FINAL ===
+let __cfgCache = null; let __lastCfgTitle='';
 async function getCfg(){
-  if(!me) return null;
-  if(__cfgCache) return __cfgCache;
+  if(!me) return null; if(__cfgCache) return __cfgCache;
   const {data} = await sb.from('user_settings').select('*').eq('user_id', me.id).maybeSingle();
   if(data){ __cfgCache = data; return data; }
   const {data:created} = await sb.from('user_settings').insert({user_id: me.id}).select().single();
-  __cfgCache = created || {};
-  return __cfgCache;
+  __cfgCache = created || {}; return __cfgCache;
 }
 async function saveCfg(patch){
-  if(!me) return;
-  __cfgCache = {...(__cfgCache||{}), ...patch};
+  if(!me) return; __cfgCache = {...(__cfgCache||{}), ...patch};
   const {error} = await sb.from('user_settings').upsert({user_id: me.id, ...patch, updated_at: new Date().toISOString()});
-  if(error) return toast(error.message);
-  toast('Guardado en Supabase');
+  if(error) return toast(error.message); toast('Guardado en Supabase');
 }
-function sw(label, key, val, desc){
-  return `<label style="display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid #ffffff14;cursor:pointer"><span><b style="display:block">${label}</b><small style="opacity:.65">${desc}</small></span><input type="checkbox" data-cfg="${key}" ${val?'checked':''} style="width:44px;height:24px;accent-color:#6a00f4"></label>`;
-}
-function inp(label, key, val, ph, type){
-  return `<label style="display:block;margin:12px 0"><b>${label}</b><input type="${type||'text'}" data-cfg-input="${key}" value="${String(val??'').replace(/"/g,'')}" placeholder="${ph}" style="width:100%;margin-top:6px;padding:12px;border-radius:12px;background:#00000040;color:#fff;border:1px solid #ffffff20"></label>`;
-}
-function btn(label, id, color){
-  return `<button id="${id}" style="width:100%;padding:13px;border:0;border-radius:12px;background:${color||'#6a00f4'};color:#fff;font-weight:700;margin-top:12px">${label}</button>`;
-}
-// Busca el título que está ARRIBA de cada placeholder, no el primero que se ve
-function getTitleFor(placeholder){
-  const titles = ['Gestión del perfil','Personalización','Notificaciones','Privacidad','Seguridad','Cuenta'];
-  let el = placeholder;
-  // Sube 10 niveles buscando el contenedor de la pantalla
-  for(let i=0;i<10 && el;i++){
-    el = el.parentElement;
-    if(!el) break;
-    // Dentro de ese contenedor, busca el título
-    const found = [...el.querySelectorAll('h1,h2,h3,div,span,b')].find(x => titles.includes(x.textContent?.trim()) && x.children.length===0);
-    if(found) return found.textContent.trim();
-  }
-  // Si no lo encontró arriba, busca hacia atrás en todo el documento
-  const all = [...document.querySelectorAll('h1,h2,h3,div,span,b')];
-  const idx = all.indexOf(placeholder);
-  for(let i=idx;i>=0;i--){
-    if(titles.includes(all[i].textContent?.trim())) return all[i].textContent.trim();
-  }
-  return '';
+function sw(label, key, val, desc){ return `<label style="display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid #ffffff14;cursor:pointer"><span><b style="display:block">${label}</b><small style="opacity:.65">${desc}</small></span><input type="checkbox" data-cfg="${key}" ${val?'checked':''} style="width:44px;height:24px;accent-color:#6a00f4"></label>`; }
+function inp(label, key, val, ph, type){ return `<label style="display:block;margin:12px 0"><b>${label}</b><input type="${type||'text'}" data-cfg-input="${key}" value="${String(val??'').replace(/"/g,'')}" placeholder="${ph}" style="width:100%;margin-top:6px;padding:12px;border-radius:12px;background:#00000040;color:#fff;border:1px solid #ffffff20"></label>`; }
+function btn(label, id, color){ return `<button id="${id}" style="width:100%;padding:13px;border:0;border-radius:12px;background:${color||'#6a00f4'};color:#fff;font-weight:700;margin-top:12px">${label}</button>`; }
+function isVisibleCfg(el){ if(!el) return false; let p=el; while(p && p!==document.body){ const s=getComputedStyle(p); if(s.display==='none'||s.visibility==='hidden') return false; p=p.parentElement; } const r=el.getBoundingClientRect(); return r.width>0 && r.height>0; }
+function getVisibleTitle(){
+  const titles=['Gestión del perfil','Personalización','Notificaciones','Privacidad','Seguridad','Cuenta'];
+  const els=[...document.querySelectorAll('h1,h2,h3,div,span,b')].filter(el=>titles.includes(el.textContent?.trim()) && el.children.length===0 && isVisibleCfg(el));
+  if(!els.length) return ''; els.sort((a,b)=>a.getBoundingClientRect().top-b.getBoundingClientRect().top); return els[0].textContent.trim();
 }
 async function renderRealSettings(){
-  const all = [...document.querySelectorAll('div, p, span')];
-  const placeholders = all.filter(el => el.textContent?.trim() === 'Esta sección está lista para conectar sus controles reales.');
-  if(!placeholders.length) return;
-  const cfg = await getCfg() || {};
-  const prof2 = prof || {};
-  for(const placeholder of placeholders){
-    const title = getTitleFor(placeholder);
-    if(!title) continue;
-    const box = placeholder.parentElement || placeholder;
-    // Si ya está pintado para este título, no lo borres otra vez
-    if(box.dataset.cfgTitle === title && box.innerHTML.includes('data-cfg')) continue;
-    if(box.dataset.cfgTitle === title && box.innerHTML.length > 200) continue;
-    box.dataset.cfgTitle = title;
-    let html = '';
-    if(title === 'Cuenta'){
-      const {data:{user}} = await sb.auth.getUser();
-      const fecha = user?.created_at ? new Date(user.created_at).toLocaleDateString('es-MX') : 'Hoy';
-      html = `<p style="opacity:.7">Administra los datos básicos asociados a tu cuenta. Tu email nunca se muestra a otros usuarios.</p><div style="background:#00000040;padding:14px;border-radius:12px;margin:12px 0"><b>🔒 Sesión actual</b><br><small style="opacity:.7">Conectado como:<br>${E(me?.email||'')}</small><br><small style="opacity:.7">Cuenta creada: ${fecha}</small><br><small style="opacity:.7">Dispositivo: Este teléfono</small></div>${inp('Cambiar email','new-email','','Nuevo email','email')}${btn('Cambiar mi email','cfg-change-email')}${btn('Cerrar sesión en este dispositivo','cfg-logout','#ef4444')}${btn('Cerrar sesión en TODOS los dispositivos','cfg-logout-all','#7f1d1d')}<div style="background:#7f1d1d30;border:1px solid #ef444444;padding:14px;border-radius:12px;margin-top:16px"><b style="color:#fca5a5">⚠️ Zona peligrosa</b><p style="opacity:.7;font-size:13px">Al eliminar tu cuenta se borra tu perfil y tu configuración para siempre.</p>${inp('Escribe tu contraseña para confirmar','delete-pass','','Tu contraseña actual','password')}${btn('Eliminar mi cuenta para siempre','cfg-delete','#ef4444')}</div>`;
-    } else if(title === 'Privacidad'){
-      const {data:bloq} = await sb.from('blocked_users').select('blocked_id').eq('blocker_id', me.id);
-      let bloqHtml = '<p style="opacity:.6">No tienes a nadie bloqueado.</p>';
-      if(bloq && bloq.length){
-        bloqHtml = '';
-        for(const b of bloq){
-          const {data:p} = await sb.from('profiles').select('username, nombre').eq('id', b.blocked_id).maybeSingle();
-          bloqHtml += `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #ffffff14"><span><b>${E(p?.username || 'Usuario')}</b><br><small style="opacity:.6">${E(p?.nombre||'')}</small></span><button data-unblock="${b.blocked_id}" style="padding:8px 14px;border-radius:8px;border:0;background:#ef4444;color:#fff">Desbloquear</button></div>`;
-        }
-      }
-      const {data:reqs} = await sb.from('follow_requests').select('*').eq('to_id', me.id).eq('status','pending');
-      let reqHtml = '';
-      if(reqs && reqs.length){
-        reqHtml = `<div style="margin-top:16px"><b>Solicitudes de seguimiento (${reqs.length})</b>`;
-        for(const r of reqs){
-          const {data:p} = await sb.from('profiles').select('username').eq('id', r.from_id).maybeSingle();
-          reqHtml += `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #ffffff14"><span>@${E(p?.username||'usuario')}</span><span><button data-req-accept="${r.id}" style="padding:6px 12px;border:0;border-radius:8px;background:#22c55e;color:#fff;margin-right:6px">Aceptar</button><button data-req-reject="${r.id}" style="padding:6px 12px;border:0;border-radius:8px;background:#ef4444;color:#fff">Rechazar</button></span></div>`;
-        }
-        reqHtml += `</div>`;
-      }
-      html = `<p style="opacity:.7">Define cómo se comparte tu contenido y quién puede encontrarte.</p>${sw('Perfil público','perfil_publico',cfg.perfil_publico,'Si lo apagas, tu cuenta es privada y nadie te sigue sin tu aprobación')}${sw('Cuenta privada','cuenta_privada',cfg.cuenta_privada,'Solo tus seguidores aprobados ven tu contenido')}${sw('Permitir que me encuentren','permitir_busqueda',cfg.permitir_busqueda,'Apareces en búsqueda')}${sw('Permitir mensajes','permitir_mensajes',cfg.permitir_mensajes,'Otros pueden escribirte')}${sw('Mostrar mi actividad','mostrar_actividad',cfg.mostrar_actividad,'Se muestra si estás activo')}${sw('Ocultar mi email','ocultar_email',cfg.ocultar_email ?? true,'Tu email nunca se muestra a otros')}<div style="margin-top:18px"><b>🚫 Usuarios bloqueados</b><p style="opacity:.6;font-size:13px">Los bloqueados no pueden ver tu perfil ni escribirte.</p>${inp('Bloquear por usuario','block-user','','@usuario')}${btn('Bloquear usuario','cfg-block','#ef4444')}${bloqHtml}</div>${reqHtml}`;
-    } else if(title === 'Seguridad'){
-      html = `<p style="opacity:.7">Protege tu cuenta. Usa una contraseña que solo tú sepas.</p>${inp('Nueva contraseña','new-pass','','Mínimo 6 caracteres','password')}${btn('Cambiar contraseña','cfg-pass')}${inp('Confirmar contraseña actual','confirm-pass','','Para verificar que eres tú','password')}<div style="background:#00000040;padding:12px;border-radius:12px;margin-top:12px"><b>Consejos de seguridad</b><br><small style="opacity:.7">• No compartas tu contraseña<br>• Cierra sesión si usas otro cel<br>• Si alguien entra a tu cuenta, cambia tu contraseña y cierra sesión en todos los dispositivos</small></div>${btn('Cerrar sesión en TODOS los dispositivos','cfg-logout-all2','#7f1d1d')}`;
-    } else if(title === 'Notificaciones'){
-      html = `<p style="opacity:.7">Configura los avisos.</p>${sw('Me gusta','notif_likes',cfg.notif_likes,'Cuando dan like')}${sw('Comentarios','notif_comentarios',cfg.notif_comentarios,'Cuando comentan')}${sw('Nuevos seguidores','notif_seguidores',cfg.notif_seguidores,'Cuando te siguen')}${sw('Mensajes','notif_mensajes',cfg.notif_mensajes,'Cuando te escriben')}${sw('Alertas de inicio de sesión','notif_login',cfg.notif_login,'Si alguien entra a tu cuenta')}`;
-    } else if(title === 'Personalización'){
-      html = `<p style="opacity:.7">Ajusta la apariencia de Gelxit.</p><label style="display:block;margin:12px 0"><b>Tema</b><select data-cfg-select="tema" style="width:100%;padding:12px;border-radius:12px;background:#111;color:#fff;margin-top:6px"><option value="dark" ${cfg.tema==='dark'?'selected':''}>Oscuro</option><option value="light" ${cfg.tema==='light'?'selected':''}>Claro</option></select></label><label style="display:block;margin:12px 0"><b>Color de acento</b><input type="color" data-cfg-select="color_acento" value="${cfg.color_acento||'#6a00f4'}" style="width:100%;height:44px"></label>${sw('Reproducción automática','autoplay',cfg.autoplay,'Videos solos')}`;
-    } else if(title === 'Gestión del perfil'){
-      html = `<p style="opacity:.7">Edita tu información pública. Tu email nunca se muestra aquí.</p>${inp('Nombre','nombre',prof2.nombre,'Tu nombre')}${inp('Usuario','username',prof2.username,'@usuario')}${inp('Biografía','bio',prof2.bio,'Cuéntanos de ti...')}${btn('Guardar perfil','cfg-save-perfil')}`;
-    }
-    if(!html) continue;
-    box.innerHTML = html;
-    if(cfg.tema) document.documentElement.dataset.theme = cfg.tema;
+  const all=[...document.querySelectorAll('div,p,span')];
+  const placeholder=all.find(el=>el.textContent?.trim()==='Esta sección está lista para conectar sus controles reales.' && isVisibleCfg(el));
+  if(!placeholder) return;
+  const title=getVisibleTitle(); if(!title) return;
+  const box=placeholder.parentElement||placeholder;
+  if(box.dataset.cfgTitle===title && __lastCfgTitle===title) return;
+  box.dataset.cfgTitle=title; __lastCfgTitle=title;
+  const cfg=await getCfg()||{}; const prof2=prof||{}; let html='';
+  if(title==='Cuenta'){
+    const {data:{user}} = await sb.auth.getUser();
+    const fecha=user?.created_at?new Date(user.created_at).toLocaleDateString('es-MX'):'Hoy';
+    html=`<p style="opacity:.7">Administra los datos de tu cuenta. Tu email nunca se muestra a otros.</p><div style="background:#00000040;padding:14px;border-radius:12px;margin:12px 0"><b>🔒 Sesión actual</b><br><small style="opacity:.7">Conectado como:<br>${E(me?.email||'')}</small><br><small style="opacity:.7">Cuenta creada: ${fecha}</small><br><small style="opacity:.7">Dispositivo: Este teléfono</small></div>${inp('Cambiar email','new-email','','Nuevo email','email')}${btn('Cambiar mi email','cfg-change-email')}${btn('Cerrar sesión en este dispositivo','cfg-logout','#ef4444')}${btn('Cerrar sesión en TODOS los dispositivos','cfg-logout-all','#7f1d1d')}<div style="background:#7f1d1d30;border:1px solid #ef444444;padding:14px;border-radius:12px;margin-top:16px"><b style="color:#fca5a5">⚠️ Zona peligrosa</b><p style="opacity:.7;font-size:13px">Al eliminar tu cuenta se borra tu perfil y tu configuración para siempre.</p>${inp('Escribe tu contraseña para confirmar','delete-pass','','Tu contraseña actual','password')}${btn('Eliminar mi cuenta para siempre','cfg-delete','#ef4444')}</div>`;
+  } else if(title==='Privacidad'){
+    const {data:bloq}=await sb.from('blocked_users').select('blocked_id').eq('blocker_id',me.id);
+    let bloqHtml='<p style="opacity:.6">No tienes a nadie bloqueado.</p>';
+    if(bloq && bloq.length){ bloqHtml=''; for(const b of bloq){ const {data:p}=await sb.from('profiles').select('username,nombre').eq('id',b.blocked_id).maybeSingle(); bloqHtml+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #ffffff14"><span><b>${E(p?.username||'Usuario')}</b><br><small style="opacity:.6">${E(p?.nombre||'')}</small></span><button data-unblock="${b.blocked_id}" style="padding:8px 14px;border-radius:8px;border:0;background:#ef4444;color:#fff">Desbloquear</button></div>`; } }
+    const {data:reqs}=await sb.from('follow_requests').select('*').eq('to_id',me.id).eq('status','pending');
+    let reqHtml='';
+    if(reqs && reqs.length){ reqHtml=`<div style="margin-top:16px"><b>Solicitudes de seguimiento (${reqs.length})</b>`; for(const r of reqs){ const {data:p}=await sb.from('profiles').select('username').eq('id',r.from_id).maybeSingle(); reqHtml+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #ffffff14"><span>@${E(p?.username||'usuario')}</span><span><button data-req-accept="${r.id}" style="padding:6px 12px;border:0;border-radius:8px;background:#22c55e;color:#fff;margin-right:6px">Aceptar</button><button data-req-reject="${r.id}" style="padding:6px 12px;border:0;border-radius:8px;background:#ef4444;color:#fff">Rechazar</button></span></div>`; } reqHtml+=`</div>`; }
+    html=`<p style="opacity:.7">Define cómo se comparte tu contenido y quién puede encontrarte.</p>${sw('Perfil público','perfil_publico',cfg.perfil_publico,'Si lo apagas, tu cuenta es privada y nadie te sigue sin tu aprobación')}${sw('Cuenta privada','cuenta_privada',cfg.cuenta_privada,'Solo tus seguidores aprobados ven tu contenido')}${sw('Permitir que me encuentren','permitir_busqueda',cfg.permitir_busqueda,'Apareces en búsqueda')}${sw('Permitir mensajes','permitir_mensajes',cfg.permitir_mensajes,'Otros pueden escribirte')}${sw('Mostrar mi actividad','mostrar_actividad',cfg.mostrar_actividad,'Se muestra si estás activo')}${sw('Ocultar mi email','ocultar_email',cfg.ocultar_email ?? true,'Tu email nunca se muestra a otros')}<div style="margin-top:18px"><b>🚫 Usuarios bloqueados</b><p style="opacity:.6;font-size:13px">Los bloqueados no pueden ver tu perfil ni escribirte.</p>${inp('Bloquear por usuario','block-user','','@usuario')}${btn('Bloquear usuario','cfg-block','#ef4444')}${bloqHtml}</div>${reqHtml}`;
+  } else if(title==='Seguridad'){
+    html=`<p style="opacity:.7">Protege tu cuenta. Usa una contraseña que solo tú sepas.</p>${inp('Nueva contraseña','new-pass','','Mínimo 6 caracteres','password')}${btn('Cambiar contraseña','cfg-pass')}${inp('Confirmar contraseña actual','confirm-pass','','Para verificar que eres tú','password')}<div style="background:#00000040;padding:12px;border-radius:12px;margin-top:12px"><b>Consejos de seguridad</b><br><small style="opacity:.7">• No compartas tu contraseña<br>• Cierra sesión si usas otro cel<br>• Si alguien entra a tu cuenta, cambia tu contraseña y cierra sesión en todos los dispositivos</small></div>${btn('Cerrar sesión en TODOS los dispositivos','cfg-logout-all2','#7f1d1d')}`;
+  } else if(title==='Notificaciones'){
+    html=`<p style="opacity:.7">Configura los avisos.</p>${sw('Me gusta','notif_likes',cfg.notif_likes,'Cuando dan like')}${sw('Comentarios','notif_comentarios',cfg.notif_comentarios,'Cuando comentan')}${sw('Nuevos seguidores','notif_seguidores',cfg.notif_seguidores,'Cuando te siguen')}${sw('Mensajes','notif_mensajes',cfg.notif_mensajes,'Cuando te escriben')}${sw('Alertas de inicio de sesión','notif_login',cfg.notif_login,'Si alguien entra a tu cuenta')}`;
+  } else if(title==='Personalización'){
+    html=`<p style="opacity:.7">Ajusta la apariencia de Gelxit.</p><label style="display:block;margin:12px 0"><b>Tema</b><select data-cfg-select="tema" style="width:100%;padding:12px;border-radius:12px;background:#111;color:#fff;margin-top:6px"><option value="dark" ${cfg.tema==='dark'?'selected':''}>Oscuro</option><option value="light" ${cfg.tema==='light'?'selected':''}>Claro</option></select></label><label style="display:block;margin:12px 0"><b>Color de acento</b><input type="color" data-cfg-select="color_acento" value="${cfg.color_acento||'#6a00f4'}" style="width:100%;height:44px"></label>${sw('Reproducción automática','autoplay',cfg.autoplay,'Videos solos')}`;
+  } else if(title==='Gestión del perfil'){
+    html=`<p style="opacity:.7">Edita tu información pública. Tu email nunca se muestra aquí.</p>${inp('Nombre','nombre',prof2.nombre,'Tu nombre')}${inp('Usuario','username',prof2.username,'@usuario')}${inp('Biografía','bio',prof2.bio,'Cuéntanos de ti...')}${btn('Guardar perfil','cfg-save-perfil')}`;
   }
+  if(!html) return; box.innerHTML=html; if(cfg.tema) document.documentElement.dataset.theme=cfg.tema;
 }
 document.addEventListener('click', async (e)=>{
-  if(e.target.id === 'cfg-logout'){ await sb.auth.signOut(); location.reload(); }
-  if(e.target.id === 'cfg-logout-all' || e.target.id === 'cfg-logout-all2'){ if(!confirm('¿Cerrar sesión en TODOS los dispositivos? Vas a tener que volver a entrar en este también.')) return; await sb.auth.signOut({scope:'global'}); location.reload(); }
-  if(e.target.id === 'cfg-delete'){
-    const pass = document.querySelector('[data-cfg-input="delete-pass"]')?.value;
-    if(!pass) return toast('Escribe tu contraseña para confirmar');
-    const {error:errAuth} = await sb.auth.signInWithPassword({email: me.email, password: pass});
-    if(errAuth) return toast('Contraseña incorrecta');
+  if(e.target.id==='cfg-logout'){ await sb.auth.signOut(); location.reload(); }
+  if(e.target.id==='cfg-logout-all' || e.target.id==='cfg-logout-all2'){ if(!confirm('¿Cerrar sesión en TODOS los dispositivos?')) return; await sb.auth.signOut({scope:'global'}); location.reload(); }
+  if(e.target.id==='cfg-delete'){
+    const pass=document.querySelector('[data-cfg-input="delete-pass"]')?.value; if(!pass) return toast('Escribe tu contraseña para confirmar');
+    const {error:errAuth}=await sb.auth.signInWithPassword({email:me.email,password:pass}); if(errAuth) return toast('Contraseña incorrecta');
     if(!confirm('¿SEGURO? Esto borra tu cuenta para siempre.')) return;
-    await sb.from('profiles').delete().eq('id', me.id);
-    await sb.auth.signOut(); location.reload();
+    await sb.from('profiles').delete().eq('id',me.id); await sb.auth.signOut(); location.reload();
   }
-  if(e.target.id === 'cfg-change-email'){
-    const newEmail = document.querySelector('[data-cfg-input="new-email"]')?.value;
-    if(!newEmail || !newEmail.includes('@')) return toast('Pon un email válido');
-    const {error} = await sb.auth.updateUser({email: newEmail});
-    if(error) return toast(error.message);
-    toast('Te mandamos un correo para confirmar el cambio');
+  if(e.target.id==='cfg-change-email'){
+    const ne=document.querySelector('[data-cfg-input="new-email"]')?.value; if(!ne||!ne.includes('@')) return toast('Pon un email válido');
+    const {error}=await sb.auth.updateUser({email:ne}); if(error) return toast(error.message); toast('Te mandamos un correo para confirmar el cambio');
   }
-  if(e.target.id === 'cfg-pass'){
-    const pass = document.querySelector('[data-cfg-input="new-pass"]')?.value;
-    if(!pass || pass.length < 6) return toast('Pon mínimo 6');
-    const {error} = await sb.auth.updateUser({password: pass});
-    if(error) return toast(error.message);
-    toast('Contraseña cambiada');
+  if(e.target.id==='cfg-pass'){
+    const pass=document.querySelector('[data-cfg-input="new-pass"]')?.value; if(!pass||pass.length<6) return toast('Pon mínimo 6');
+    const {error}=await sb.auth.updateUser({password:pass}); if(error) return toast(error.message); toast('Contraseña cambiada');
   }
-  if(e.target.id === 'cfg-save-perfil'){ const nombre = document.querySelector('[data-cfg-input="nombre"]')?.value; const username = document.querySelector('[data-cfg-input="username"]')?.value; const bio = document.querySelector('[data-cfg-input="bio"]')?.value; const {error} = await sb.from('profiles').update({nombre, username, bio}).eq('id', me.id); if(error) return toast(error.message); toast('Perfil guardado'); location.reload(); }
-  if(e.target.id === 'cfg-block'){
-    const u = document.querySelector('[data-cfg-input="block-user"]')?.value?.replace('@','').trim();
-    if(!u) return toast('Escribe el @usuario');
-    const {data:target} = await sb.from('profiles').select('id').eq('username', u).maybeSingle();
-    if(!target) return toast('No existe ese usuario');
-    if(target.id === me.id) return toast('No te puedes bloquear a ti');
-    const {error} = await sb.from('blocked_users').insert({blocker_id: me.id, blocked_id: target.id});
-    if(error) return toast('Ya está bloqueado');
-    toast('Usuario bloqueado');
-    const box = document.querySelector('[data-cfg-title="Privacidad"]'); if(box) box.dataset.cfgTitle = '';
-    renderRealSettings();
+  if(e.target.id==='cfg-save-perfil'){ const nombre=document.querySelector('[data-cfg-input="nombre"]')?.value; const username=document.querySelector('[data-cfg-input="username"]')?.value; const bio=document.querySelector('[data-cfg-input="bio"]')?.value; const {error}=await sb.from('profiles').update({nombre,username,bio}).eq('id',me.id); if(error) return toast(error.message); toast('Perfil guardado'); location.reload(); }
+  if(e.target.id==='cfg-block'){
+    const u=document.querySelector('[data-cfg-input="block-user"]')?.value?.replace('@','').trim(); if(!u) return toast('Escribe el @usuario');
+    const {data:target}=await sb.from('profiles').select('id').eq('username',u).maybeSingle(); if(!target) return toast('No existe ese usuario');
+    if(target.id===me.id) return toast('No te puedes bloquear a ti');
+    const {error}=await sb.from('blocked_users').insert({blocker_id:me.id,blocked_id:target.id}); if(error) return toast('Ya está bloqueado'); toast('Usuario bloqueado'); __lastCfgTitle=''; renderRealSettings();
   }
-  const unblockId = e.target.dataset?.unblock;
-  if(unblockId){ await sb.from('blocked_users').delete().eq('blocker_id', me.id).eq('blocked_id', unblockId); toast('Desbloqueado'); const box = document.querySelector('[data-cfg-title="Privacidad"]'); if(box) box.dataset.cfgTitle = ''; renderRealSettings(); }
-  const acc = e.target.dataset?.reqAccept;
-  if(acc){ await sb.from('follow_requests').update({status:'accepted'}).eq('id', acc); toast('Solicitud aceptada'); const box = document.querySelector('[data-cfg-title="Privacidad"]'); if(box) box.dataset.cfgTitle = ''; renderRealSettings(); }
-  const rej = e.target.dataset?.reqReject;
-  if(rej){ await sb.from('follow_requests').update({status:'rejected'}).eq('id', rej); toast('Solicitud rechazada'); const box = document.querySelector('[data-cfg-title="Privacidad"]'); if(box) box.dataset.cfgTitle = ''; renderRealSettings(); }
+  const unblockId=e.target.dataset?.unblock; if(unblockId){ await sb.from('blocked_users').delete().eq('blocker_id',me.id).eq('blocked_id',unblockId); toast('Desbloqueado'); __lastCfgTitle=''; renderRealSettings(); }
+  const acc=e.target.dataset?.reqAccept; if(acc){ await sb.from('follow_requests').update({status:'accepted'}).eq('id',acc); toast('Solicitud aceptada'); __lastCfgTitle=''; renderRealSettings(); }
+  const rej=e.target.dataset?.reqReject; if(rej){ await sb.from('follow_requests').update({status:'rejected'}).eq('id',rej); toast('Solicitud rechazada'); __lastCfgTitle=''; renderRealSettings(); }
 });
 document.addEventListener('change', async (e)=>{
-  const k = e.target.dataset.cfg; if(k){ await saveCfg({[k]: e.target.checked}); return; }
-  const ks = e.target.dataset.cfgSelect; if(ks){ await saveCfg({[ks]: e.target.value}); if(ks==='tema') document.documentElement.dataset.theme = e.target.value; }
+  const k=e.target.dataset.cfg; if(k){ await saveCfg({[k]:e.target.checked}); return; }
+  const ks=e.target.dataset.cfgSelect; if(ks){ await saveCfg({[ks]:e.target.value}); if(ks==='tema') document.documentElement.dataset.theme=e.target.value; }
 });
 setInterval(renderRealSettings, 1000);
