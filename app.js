@@ -469,7 +469,7 @@ async function respH(){
   const r=await sb.from('messages').insert({chat_id:c,user_id:me.id,texto:'Respuesta a tu historia: '+t});if(err(r))return;
   $('#svr').value='';toast('Respuesta enviada');
 }
-// === CONFIG REAL GELXIT V2 - SUPABASE - UNICO BLOQUE ===
+// === CONFIG REAL GELXIT V4 SEGURO - UNICO BLOQUE ===
 let __cfgCache = null;
 async function getCfg(){
   if(!me) return null;
@@ -490,43 +490,132 @@ async function saveCfg(patch){
 function sw(label, key, val, desc){
   return `<label style="display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid #ffffff14;cursor:pointer"><span><b style="display:block">${label}</b><small style="opacity:.65">${desc}</small></span><input type="checkbox" data-cfg="${key}" ${val?'checked':''} style="width:44px;height:24px;accent-color:#6a00f4"></label>`;
 }
-function inp(label, key, val, ph){
-  return `<label style="display:block;margin:12px 0"><b>${label}</b><input data-cfg-input="${key}" value="${String(val??'').replace(/"/g,'')}" placeholder="${ph}" style="width:100%;margin-top:6px;padding:12px;border-radius:12px;background:#00000040;color:#fff;border:1px solid #ffffff20"></label>`;
+function inp(label, key, val, ph, type){
+  return `<label style="display:block;margin:12px 0"><b>${label}</b><input type="${type||'text'}" data-cfg-input="${key}" value="${String(val??'').replace(/"/g,'')}" placeholder="${ph}" style="width:100%;margin-top:6px;padding:12px;border-radius:12px;background:#00000040;color:#fff;border:1px solid #ffffff20"></label>`;
 }
 function btn(label, id, color){
   return `<button id="${id}" style="width:100%;padding:13px;border:0;border-radius:12px;background:${color||'#6a00f4'};color:#fff;font-weight:700;margin-top:12px">${label}</button>`;
+}
+function getScreenTitle(){
+  const titles = ['Gestión del perfil','Personalización','Notificaciones','Privacidad','Seguridad','Cuenta'];
+  const els = [...document.querySelectorAll('h1,h2,h3,div,span,b')];
+  for(const t of titles){
+    const found = els.find(el => el.textContent?.trim() === t && el.children.length === 0);
+    if(found) return t;
+  }
+  return '';
 }
 async function renderRealSettings(){
   const all = [...document.querySelectorAll('div, p, span')];
   const placeholder = all.find(el => el.textContent?.trim() === 'Esta sección está lista para conectar sus controles reales.');
   if(!placeholder) return;
-  const bodyText = document.body.innerText || '';
+  const title = getScreenTitle();
+  if(!title) return;
   const cfg = await getCfg() || {};
   const prof2 = prof || {};
   const box = placeholder.parentElement || placeholder;
   let html = '';
-  if(bodyText.includes('Cuenta')){
-    html = `<p style="opacity:.7">Administra los datos básicos asociados a tu cuenta.</p><p><b>Email:</b> ${E(me?.email||'')}</p>${btn('Cerrar sesión','cfg-logout','#ef4444')}${btn('Eliminar mi cuenta','cfg-delete','#7f1d1d')}`;
-  } else if(bodyText.includes('Privacidad')){
-    html = `<p style="opacity:.7">Define cómo se comparte tu contenido.</p>${sw('Perfil público','perfil_publico',cfg.perfil_publico,'Si lo apagas, nadie ve tu perfil')}${sw('Permitir que me encuentren','permitir_busqueda',cfg.permitir_busqueda,'Apareces en búsqueda')}${sw('Permitir mensajes','permitir_mensajes',cfg.permitir_mensajes,'Otros pueden escribirte')}${sw('Mostrar mi actividad','mostrar_actividad',cfg.mostrar_actividad,'Se muestra si estás activo')}`;
-  } else if(bodyText.includes('Seguridad')){
-    html = `<p style="opacity:.7">Protege tu cuenta.</p>${inp('Nueva contraseña','new-pass','','Mínimo 6 caracteres')}${btn('Cambiar contraseña','cfg-pass')}${btn('Cerrar sesión','cfg-logout2','#ef4444')}`;
-  } else if(bodyText.includes('Notificaciones')){
-    html = `<p style="opacity:.7">Configura los avisos.</p>${sw('Me gusta','notif_likes',cfg.notif_likes,'Cuando dan like')}${sw('Comentarios','notif_comentarios',cfg.notif_comentarios,'Cuando comentan')}${sw('Nuevos seguidores','notif_seguidores',cfg.notif_seguidores,'Cuando te siguen')}${sw('Mensajes','notif_mensajes',cfg.notif_mensajes,'Cuando te escriben')}`;
-  } else if(bodyText.includes('Personalización')){
+  if(title === 'Cuenta'){
+    const {data:{user}} = await sb.auth.getUser();
+    const fecha = user?.created_at ? new Date(user.created_at).toLocaleDateString('es-MX') : 'Hoy';
+    html = `<p style="opacity:.7">Administra los datos básicos asociados a tu cuenta. Tu email nunca se muestra a otros usuarios.</p>
+    <div style="background:#00000040;padding:14px;border-radius:12px;margin:12px 0"><b>🔒 Sesión actual</b><br><small style="opacity:.7">Conectado como:<br>${E(me?.email||'')}</small><br><small style="opacity:.7">Cuenta creada: ${fecha}</small><br><small style="opacity:.7">Dispositivo: Este teléfono</small></div>
+    ${inp('Cambiar email','new-email','','Nuevo email', 'email')}
+    ${btn('Cambiar mi email','cfg-change-email')}
+    ${btn('Cerrar sesión en este dispositivo','cfg-logout','#ef4444')}
+    ${btn('Cerrar sesión en TODOS los dispositivos','cfg-logout-all','#7f1d1d')}
+    <div style="background:#7f1d1d30;border:1px solid #ef444444;padding:14px;border-radius:12px;margin-top:16px"><b style="color:#fca5a5">⚠️ Zona peligrosa</b><p style="opacity:.7;font-size:13px">Al eliminar tu cuenta se borra tu perfil y tu configuración para siempre.</p>${inp('Escribe tu contraseña para confirmar','delete-pass','','Tu contraseña actual','password')}${btn('Eliminar mi cuenta para siempre','cfg-delete','#ef4444')}</div>`;
+  } else if(title === 'Privacidad'){
+    // Cargar bloqueados
+    const {data:bloq} = await sb.from('blocked_users').select('blocked_id, created_at').eq('blocker_id', me.id);
+    let bloqHtml = '<p style="opacity:.6">No tienes a nadie bloqueado.</p>';
+    if(bloq && bloq.length){
+      bloqHtml = '';
+      for(const b of bloq){
+        const {data:p} = await sb.from('profiles').select('username, nombre').eq('id', b.blocked_id).maybeSingle();
+        bloqHtml += `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #ffffff14"><span><b>${E(p?.username || 'Usuario')}</b><br><small style="opacity:.6">${E(p?.nombre||'')}</small></span><button data-unblock="${b.blocked_id}" style="padding:8px 14px;border-radius:8px;border:0;background:#ef4444;color:#fff">Desbloquear</button></div>`;
+      }
+    }
+    const {data:reqs} = await sb.from('follow_requests').select('*').eq('to_id', me.id).eq('status','pending');
+    let reqHtml = '';
+    if(reqs && reqs.length){
+      reqHtml = `<div style="margin-top:16px"><b>Solicitudes de seguimiento (${reqs.length})</b>`;
+      for(const r of reqs){
+        const {data:p} = await sb.from('profiles').select('username').eq('id', r.from_id).maybeSingle();
+        reqHtml += `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #ffffff14"><span>@${E(p?.username||'usuario')}</span><span><button data-req-accept="${r.id}" style="padding:6px 12px;border:0;border-radius:8px;background:#22c55e;color:#fff;margin-right:6px">Aceptar</button><button data-req-reject="${r.id}" style="padding:6px 12px;border:0;border-radius:8px;background:#ef4444;color:#fff">Rechazar</button></span></div>`;
+      }
+      reqHtml += `</div>`;
+    }
+    html = `<p style="opacity:.7">Define cómo se comparte tu contenido y quién puede encontrarte.</p>
+    ${sw('Perfil público','perfil_publico',cfg.perfil_publico,'Si lo apagas, tu cuenta es privada y nadie te sigue sin tu aprobación')}
+    ${sw('Cuenta privada','cuenta_privada',cfg.cuenta_privada,'Solo tus seguidores aprobados ven tu contenido')}
+    ${sw('Permitir que me encuentren','permitir_busqueda',cfg.permitir_busqueda,'Apareces en búsqueda')}
+    ${sw('Permitir mensajes','permitir_mensajes',cfg.permitir_mensajes,'Otros pueden escribirte')}
+    ${sw('Mostrar mi actividad','mostrar_actividad',cfg.mostrar_actividad,'Se muestra si estás activo')}
+    ${sw('Ocultar mi email','ocultar_email',cfg.ocultar_email ?? true,'Tu email nunca se muestra a otros')}
+    <div style="margin-top:18px"><b>🚫 Usuarios bloqueados</b><p style="opacity:.6;font-size:13px">Los bloqueados no pueden ver tu perfil ni escribirte.</p>${inp('Bloquear por usuario','block-user','','@usuario')}${btn('Bloquear usuario','cfg-block','#ef4444')}${bloqHtml}</div>
+    ${reqHtml}`;
+  } else if(title === 'Seguridad'){
+    html = `<p style="opacity:.7">Protege tu cuenta. Usa una contraseña que solo tú sepas.</p>
+    ${inp('Nueva contraseña','new-pass','','Mínimo 6 caracteres','password')}
+    ${btn('Cambiar contraseña','cfg-pass')}
+    ${inp('Confirmar contraseña actual','confirm-pass','','Para verificar que eres tú','password')}
+    <div style="background:#00000040;padding:12px;border-radius:12px;margin-top:12px"><b>Consejos de seguridad</b><br><small style="opacity:.7">• No compartas tu contraseña<br>• Cierra sesión si usas otro cel<br>• Si alguien entra a tu cuenta, cambia tu contraseña y cierra sesión en todos los dispositivos</small></div>
+    ${btn('Cerrar sesión en TODOS los dispositivos','cfg-logout-all2','#7f1d1d')}`;
+  } else if(title === 'Notificaciones'){
+    html = `<p style="opacity:.7">Configura los avisos.</p>${sw('Me gusta','notif_likes',cfg.notif_likes,'Cuando dan like')}${sw('Comentarios','notif_comentarios',cfg.notif_comentarios,'Cuando comentan')}${sw('Nuevos seguidores','notif_seguidores',cfg.notif_seguidores,'Cuando te siguen')}${sw('Mensajes','notif_mensajes',cfg.notif_mensajes,'Cuando te escriben')}${sw('Alertas de inicio de sesión','notif_login',cfg.notif_login,'Si alguien entra a tu cuenta')}`;
+  } else if(title === 'Personalización'){
     html = `<p style="opacity:.7">Ajusta la apariencia de Gelxit.</p><label style="display:block;margin:12px 0"><b>Tema</b><select data-cfg-select="tema" style="width:100%;padding:12px;border-radius:12px;background:#111;color:#fff;margin-top:6px"><option value="dark" ${cfg.tema==='dark'?'selected':''}>Oscuro</option><option value="light" ${cfg.tema==='light'?'selected':''}>Claro</option></select></label><label style="display:block;margin:12px 0"><b>Color de acento</b><input type="color" data-cfg-select="color_acento" value="${cfg.color_acento||'#6a00f4'}" style="width:100%;height:44px"></label>${sw('Reproducción automática','autoplay',cfg.autoplay,'Videos solos')}`;
-  } else if(bodyText.includes('Gestión del perfil')){
-    html = `<p style="opacity:.7">Edita tu información pública.</p>${inp('Nombre','nombre',prof2.nombre,'Tu nombre')}${inp('Usuario','username',prof2.username,'@usuario')}${inp('Biografía','bio',prof2.bio,'Cuéntanos de ti...')}${btn('Guardar perfil','cfg-save-perfil')}`;
+  } else if(title === 'Gestión del perfil'){
+    html = `<p style="opacity:.7">Edita tu información pública. Tu email nunca se muestra aquí.</p>${inp('Nombre','nombre',prof2.nombre,'Tu nombre')}${inp('Usuario','username',prof2.username,'@usuario')}${inp('Biografía','bio',prof2.bio,'Cuéntanos de ti...')}${btn('Guardar perfil','cfg-save-perfil')}`;
   }
   if(!html) return;
   box.innerHTML = html;
   if(cfg.tema) document.documentElement.dataset.theme = cfg.tema;
 }
 document.addEventListener('click', async (e)=>{
-  if(e.target.id === 'cfg-logout' || e.target.id === 'cfg-logout2'){ await sb.auth.signOut(); location.reload(); }
-  if(e.target.id === 'cfg-delete'){ if(!confirm('¿Seguro que quieres eliminar tu cuenta?')) return; await sb.from('profiles').delete().eq('id', me.id); await sb.auth.signOut(); location.reload(); }
-  if(e.target.id === 'cfg-pass'){ const pass = document.querySelector('[data-cfg-input="new-pass"]')?.value; if(!pass || pass.length < 6) return toast('Pon mínimo 6'); const {error} = await sb.auth.updateUser({password: pass}); if(error) return toast(error.message); toast('Contraseña cambiada'); }
+  if(e.target.id === 'cfg-logout'){ await sb.auth.signOut(); location.reload(); }
+  if(e.target.id === 'cfg-logout-all' || e.target.id === 'cfg-logout-all2'){ if(!confirm('¿Cerrar sesión en TODOS los dispositivos? Vas a tener que volver a entrar en este también.')) return; await sb.auth.signOut({scope:'global'}); location.reload(); }
+  if(e.target.id === 'cfg-delete'){
+    const pass = document.querySelector('[data-cfg-input="delete-pass"]')?.value;
+    if(!pass) return toast('Escribe tu contraseña para confirmar');
+    const {error:errAuth} = await sb.auth.signInWithPassword({email: me.email, password: pass});
+    if(errAuth) return toast('Contraseña incorrecta');
+    if(!confirm('¿SEGURO? Esto borra tu cuenta para siempre.')) return;
+    await sb.from('profiles').delete().eq('id', me.id);
+    await sb.auth.signOut(); location.reload();
+  }
+  if(e.target.id === 'cfg-change-email'){
+    const newEmail = document.querySelector('[data-cfg-input="new-email"]')?.value;
+    if(!newEmail || !newEmail.includes('@')) return toast('Pon un email válido');
+    const {error} = await sb.auth.updateUser({email: newEmail});
+    if(error) return toast(error.message);
+    toast('Te mandamos un correo para confirmar el cambio');
+  }
+  if(e.target.id === 'cfg-pass'){
+    const pass = document.querySelector('[data-cfg-input="new-pass"]')?.value;
+    if(!pass || pass.length < 6) return toast('Pon mínimo 6');
+    const {error} = await sb.auth.updateUser({password: pass});
+    if(error) return toast(error.message);
+    toast('Contraseña cambiada');
+  }
   if(e.target.id === 'cfg-save-perfil'){ const nombre = document.querySelector('[data-cfg-input="nombre"]')?.value; const username = document.querySelector('[data-cfg-input="username"]')?.value; const bio = document.querySelector('[data-cfg-input="bio"]')?.value; const {error} = await sb.from('profiles').update({nombre, username, bio}).eq('id', me.id); if(error) return toast(error.message); toast('Perfil guardado'); location.reload(); }
+  if(e.target.id === 'cfg-block'){
+    const u = document.querySelector('[data-cfg-input="block-user"]')?.value?.replace('@','').trim();
+    if(!u) return toast('Escribe el @usuario');
+    const {data:target} = await sb.from('profiles').select('id').eq('username', u).maybeSingle();
+    if(!target) return toast('No existe ese usuario');
+    if(target.id === me.id) return toast('No te puedes bloquear a ti');
+    const {error} = await sb.from('blocked_users').insert({blocker_id: me.id, blocked_id: target.id});
+    if(error) return toast('Ya está bloqueado');
+    toast('Usuario bloqueado'); __cfgCache = null; renderRealSettings();
+  }
+  const unblockId = e.target.dataset?.unblock;
+  if(unblockId){ await sb.from('blocked_users').delete().eq('blocker_id', me.id).eq('blocked_id', unblockId); toast('Desbloqueado'); renderRealSettings(); }
+  const acc = e.target.dataset?.reqAccept;
+  if(acc){ await sb.from('follow_requests').update({status:'accepted'}).eq('id', acc); toast('Solicitud aceptada'); renderRealSettings(); }
+  const rej = e.target.dataset?.reqReject;
+  if(rej){ await sb.from('follow_requests').update({status:'rejected'}).eq('id', rej); toast('Solicitud rechazada'); renderRealSettings(); }
 });
 document.addEventListener('change', async (e)=>{
   const k = e.target.dataset.cfg; if(k){ await saveCfg({[k]: e.target.checked}); return; }
