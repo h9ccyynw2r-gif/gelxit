@@ -610,3 +610,59 @@ document.addEventListener('change', async (e)=>{
   const ks=e.target.dataset.cfgSelect; if(ks){ await saveCfg({[ks]:e.target.value}); if(ks==='tema') document.documentElement.dataset.theme=e.target.value; }
 });
 setInterval(renderRealSettings, 1000);
+// === PARCHE BANEO POR DIAS - PEGAR AL FINAL DE APP.JS ===
+async function banConTiempo(id, btn){
+  const card = btn.closest('div');
+  // Busca los controles que están en esa tarjeta
+  const wrap = btn.parentElement.parentElement;
+  const sel = wrap.querySelector('[data-ban-tiempo]');
+  const diasInput = wrap.querySelector('[data-ban-dias]');
+  const motivoInput = wrap.querySelector('[data-ban-motivo]');
+  let tiempo = sel ? sel.value : 'perma';
+  let dias = 0;
+  if(tiempo === 'custom') dias = parseInt(diasInput?.value || '0');
+  else if(tiempo !== 'perma') dias = parseInt(tiempo);
+  const motivo = motivoInput?.value?.trim() || 'Baneado por el dueño';
+
+  if(tiempo === 'custom' && (!dias || dias <= 0)) return toast('Pon cuántos días, wey');
+  if(!confirm(tiempo === 'perma' ? '¿Banear PERMANENTE?' : `¿Banear por ${dias} día(s)?`)) return;
+
+  let patch = { baneado: true, ban_motivo: motivo, ban_hasta: null };
+  if(dias > 0){
+    const hasta = new Date(); hasta.setDate(hasta.getDate() + dias);
+    patch.ban_hasta = hasta.toISOString();
+  }
+  const {error} = await sb.from('profiles').update(patch).eq('id', id);
+  if(error) return toast(error.message);
+  toast(tiempo === 'perma' ? 'Baneado permanente' : `Baneado por ${dias} día(s)`);
+  if(typeof adminList === 'function') adminList();
+}
+
+// Esto le mete los controles de días a cada tarjeta del Panel de Dueño
+setInterval(()=>{
+  const btns = [...document.querySelectorAll('button')].filter(b => b.textContent.trim() === 'Banear' && !b.dataset.banPatch);
+  btns.forEach(b => {
+    b.dataset.banPatch = '1';
+    // Sacamos el id del onclick original: adm('ban','ID')
+    const onclick = b.getAttribute('onclick') || '';
+    const m = onclick.match(/'([^']+)'\s*,\s*'([^']+)'/) || onclick.match(/"([^"]+)"/);
+    // Mejor: buscamos el id en el onclick completo
+    const idMatch = onclick.match(/[a-f0-9-]{36}/);
+    if(!idMatch) return;
+    const id = idMatch[0];
+    // Cambiamos el botón original para que abra los controles
+    b.outerHTML = `<div style="margin-top:10px;background:#00000040;padding:10px;border-radius:12px">
+      <b style="font-size:13px">⏳ ¿Cuánto lo baneas?</b>
+      <select data-ban-tiempo style="width:100%;padding:10px;border-radius:10px;background:#111;color:#fff;margin-top:8px;border:1px solid #ffffff20">
+        <option value="perma">♾️ Permanente</option>
+        <option value="1">1 día</option>
+        <option value="7">7 días</option>
+        <option value="30">30 días</option>
+        <option value="custom">✏️ Días personalizados...</option>
+      </select>
+      <input data-ban-dias type="number" min="1" placeholder="¿Cuántos días? Ej: 3" style="width:100%;padding:10px;border-radius:10px;background:#111;color:#fff;margin-top:8px;border:1px solid #ffffff20">
+      <input data-ban-motivo placeholder="Motivo (opcional)" style="width:100%;padding:10px;border-radius:10px;background:#111;color:#fff;margin-top:8px;border:1px solid #ffffff20">
+      <button onclick="banConTiempo('${id}', this)" style="width:100%;padding:11px;border:0;border-radius:10px;background:#ef4444;color:#fff;font-weight:700;margin-top:8px">Banear con este tiempo</button>
+    </div>`;
+  });
+}, 800);
