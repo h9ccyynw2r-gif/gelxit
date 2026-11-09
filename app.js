@@ -123,3 +123,60 @@ setInterval(()=>{ if(me&&document.querySelector('#s-chat.on')) loadMsgs(); },300
   go('home');
   sb.channel('msgs-live').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},()=>{ if(msKey) loadMsgs(); }).subscribe();
 })();
+// === PARCHE FINAL - NO BORRES LO DE ARRIBA, SOLO PEGA ESTO AL FINAL ===
+// 1. Arregla que el chat no tape todo y que los botones vuelvan a jalar
+(function(){
+  const st = document.createElement('style');
+  st.textContent = '#s-chat{display:none !important} #s-chat.on{display:flex !important;flex-direction:column !important;height:100dvh !important;overflow:hidden !important;padding-bottom:0 !important} #msgs{flex:1 !important;overflow-y:auto !important} #inp{position:sticky !important;bottom:0 !important;background:#111 !important;z-index:9999 !important;display:flex !important}';
+  document.head.appendChild(st);
+  // Asegura que go original siga siendo global y no lo tape mi go anterior
+  window._goOriginal = window.go;
+})();
+
+// 2. Tu Panel de Dueño ORIGINAL pero con baneo por días
+async function adminList(){
+  if(!isAdmin()) return;
+  const q = ($('#aq').value||'').trim().replace(/^@/,'').toLowerCase();
+  let r = sb.from('profiles').select('*').order('creado_en',{ascending:false}).limit(100);
+  if(q) r = r.ilike('username','%'+q+'%');
+  const {data,error} = await r; if(error) return toast(error.message);
+  USERS = data;
+  $('#alist').innerHTML = data.map(u=>`<div class="card p-3 flex flex-col gap-2"><div class="flex items-center gap-3">${av(u,44)}<div class="flex-1 min-w-0"><b>${E(u.nombre||u.username)}</b> ${vbadge(u)}<div class="text-sm" style="color:var(--mut)">@${E(u.username)}${u.baneado?' · <span style="color:var(--danger)">baneado'+(u.ban_hasta?' hasta '+new Date(u.ban_hasta).toLocaleDateString('es-MX'):' permanente')+'</span>':''}</div></div></div>
+   <div class="flex flex-wrap gap-2">
+    <button class="pill" onclick="adm('${u.id}','verificado_identidad')">${u.verificado_identidad?'Quitar verificación':'Verificar'}</button>
+    <button class="pill" onclick="adm('${u.id}','verificado_premium')">${u.verificado_premium?'Quitar Premium':'Dar Premium'}</button>
+    ${u.baneado?`<button class="pill" onclick="unbanUser('${u.id}')">Desbanear</button>`:''}
+    <button class="pill" onclick="verUser('${u.id}')">Ver perfil</button></div>
+   ${!u.baneado?`<div style="background:#00000040;padding:10px;border-radius:12px"><b style="font-size:13px">⏳ ¿Cuánto lo baneas?</b><select id="ban-tiempo-${u.id}" style="width:100%;padding:10px;border-radius:10px;background:#111;color:#fff;margin-top:8px"><option value="0">♾️ Permanente</option><option value="1">1 día</option><option value="7">7 días</option><option value="30">30 días</option><option value="custom">✏️ Días personalizados</option></select><input id="ban-dias-${u.id}" type="number" min="1" placeholder="¿Cuántos días? Ej: 3" style="width:100%;padding:10px;border-radius:10px;background:#111;color:#fff;margin-top:8px"><input id="ban-motivo-${u.id}" placeholder="Motivo (opcional)" style="width:100%;padding:10px;border-radius:10px;background:#111;color:#fff;margin-top:8px"><button class="pill" style="width:100%;background:#ef4444;color:#fff;margin-top:8px" onclick="banUser('${u.id}')">Banear con este tiempo</button></div>`:''}
+   </div>`).join('')||'<p class="text-sm" style="color:var(--mut)">Sin resultados.</p>';
+}
+async function banUser(id){
+  const sel = document.getElementById('ban-tiempo-'+id);
+  const diasInput = document.getElementById('ban-dias-'+id);
+  const motivoInput = document.getElementById('ban-motivo-'+id);
+  let val = sel ? sel.value : '0'; let dias = 0;
+  if(val==='custom') dias = parseInt(diasInput?.value||'0'); else dias = parseInt(val||'0');
+  if(val==='custom' && (!dias||dias<=0)) return toast('Pon cuántos días, wey');
+  const motivo = motivoInput?.value?.trim() || 'Baneado por el dueño';
+  if(!confirm(dias===0?'¿Banear PERMANENTE?':'¿Banear por '+dias+' día(s)?')) return;
+  let patch = {baneado:true, ban_motivo:motivo, ban_hasta:null};
+  if(dias>0){ const h=new Date(); h.setDate(h.getDate()+dias); patch.ban_hasta=h.toISOString(); }
+  const {error} = await sb.from('profiles').update(patch).eq('id',id);
+  if(error) return toast(error.message);
+  toast(dias===0?'Baneado permanente':'Baneado por '+dias+' día(s)'); adminList();
+}
+async function unbanUser(id){
+  const {error} = await sb.from('profiles').update({baneado:false,ban_hasta:null,ban_motivo:null}).eq('id',id);
+  if(error) return toast(error.message);
+  toast('Desbaneado'); adminList();
+}
+// 3. Si un baneado ya cumplió sus días, que entre solo
+const _startOrig2 = window.start;
+window.start = async function(u){
+  const ok = await _startOrig2(u);
+  if(ok && prof && prof.baneado && prof.ban_hasta && new Date(prof.ban_hasta) < new Date()){
+    await sb.from('profiles').update({baneado:false,ban_hasta:null,ban_motivo:null}).eq('id',u.id);
+    prof.baneado = false;
+  }
+  return ok;
+};
