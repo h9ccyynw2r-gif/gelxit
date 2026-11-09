@@ -1,4 +1,4 @@
-// GELXIT V7 - UI PREMIUM SAAS + LOGICA ORIGINAL INTACTA - TODO EN UNO
+// GELXIT V8 - LIQUID GLASS + 100K + FEED TIKTOK - TODO EN UNO
 (function(){
   const s=document.createElement('style');
   s.textContent=`
@@ -14,7 +14,7 @@
     body{font-family:var(--font); background:var(--bg); letter-spacing:-.01em}
     a[href*="netlify.com"], a[href*="netlify.app/?"], iframe[src*="netlify"]{display:none !important}
 
-    /* 2 - RESPONSIVE: MOVIL / TABLET / ESCRITORIO - SIN DESBORDAMIENTO */
+    /* RESPONSIVE */
     #feed{max-width:520px; margin:0 auto; padding:0 0 90px}
     @media(min-width:768px){
       #feed{max-width:620px}
@@ -27,22 +27,37 @@
       #chatlist, #alist{max-width:720px; margin:0 auto}
     }
 
-    /* 1 - JERARQUIA SAAS: TARJETAS, ESPACIOS, TIPOGRAFIA */
+    /* FEED TIKTOK - SNAP */
+    #feed{scroll-snap-type:y mandatory; overflow-y:auto; height:100dvh; padding-bottom:0 !important}
     .vid{
-      border-radius:var(--radius-lg) !important;
-      margin:12px 12px 18px !important;
+      scroll-snap-align:start;
+      border-radius:0 !important;
+      margin:0 !important;
       overflow:hidden; box-shadow:var(--shadow);
-      border:1px solid var(--bd);
-      aspect-ratio:9/13; height:auto !important; min-height:480px;
+      border:none !important;
+      aspect-ratio:auto !important; height:calc(100dvh - 60px) !important; min-height:0 !important;
       position:relative;
     }
+    @media(min-width:768px){
+      .vid{border-radius:22px !important; margin:12px auto 18px !important; height:calc(100dvh - 90px) !important; border:1px solid var(--bd) !important}
+    }
+
+    /* LIQUID GLASS */
     .card{
-      background:var(--card) !important; border:1px solid var(--bd) !important;
-      border-radius:var(--radius) !important; box-shadow:none !important;
+      background:rgba(20,20,22,.55) !important;
+      backdrop-filter:blur(24px) saturate(160%) !important;
+      -webkit-backdrop-filter:blur(24px) saturate(160%) !important;
+      border:1px solid rgba(255,255,255,.14) !important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 12px 32px rgba(0,0,0,.30) !important;
+      border-radius:var(--radius) !important;
     }
     .chip{
       padding:9px 16px !important; border-radius:999px !important;
-      background:var(--card2) !important; border:1px solid var(--bd) !important;
+      background:rgba(255,255,255,.10) !important;
+      backdrop-filter:blur(20px) saturate(160%) !important;
+      -webkit-backdrop-filter:blur(20px) saturate(160%) !important;
+      border:1px solid rgba(255,255,255,.18) !important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.20), 0 4px 16px rgba(0,0,0,.20) !important;
       font-size:13.5px !important; font-weight:600 !important; white-space:nowrap;
     }
     .chip.on{background:#fff !important; color:#000 !important; border-color:#fff !important}
@@ -50,8 +65,11 @@
     #chips::-webkit-scrollbar{display:none}
     .act{
       width:48px; height:48px; border-radius:999px !important;
-      background:rgba(0,0,0,.45) !important; backdrop-filter:blur(12px);
-      border:1px solid rgba(255,255,255,.15) !important;
+      background:rgba(255,255,255,.12) !important;
+      backdrop-filter:blur(20px) saturate(180%) !important;
+      -webkit-backdrop-filter:blur(20px) saturate(180%) !important;
+      border:1px solid rgba(255,255,255,.22) !important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 8px 24px rgba(0,0,0,.30) !important;
       display:flex; flex-direction:column; align-items:center; justify-content:center;
       font-size:11px; font-weight:700; color:#fff; gap:1px;
     }
@@ -60,27 +78,32 @@
     #stories{display:flex; gap:14px; overflow-x:auto; padding:14px 14px 8px; scrollbar-width:none}
     #stories::-webkit-scrollbar{display:none}
 
-    /* CHAT FIX - QUE NO TAPE TODO */
+    /* CHAT */
     #s-chat{display:none !important}
     #s-chat.on{display:flex !important; flex-direction:column !important; height:100dvh !important; overflow:hidden}
     #msgs{flex:1 !important; overflow-y:auto !important; padding:12px 12px 8px !important}
     #inp{
       padding:10px 10px calc(10px + env(safe-area-inset-bottom)) !important;
       position:sticky !important; bottom:0 !important; margin:0 !important;
-      background:#111 !important; z-index:9999 !important;
+      background:rgba(15,15,17,.45) !important;
+      backdrop-filter:blur(25px) saturate(180%) !important;
+      -webkit-backdrop-filter:blur(25px) saturate(180%) !important;
+      border-top:1px solid rgba(255,255,255,.15) !important;
+      z-index:9999 !important;
       display:flex !important; gap:8px !important; align-items:center !important;
-      border-top:1px solid var(--bd);
     }
     .bub{max-width:78%; padding:10px 14px; border-radius:18px; font-size:15px; line-height:1.4; margin-bottom:8px}
     .bub.me{background:var(--p); color:#fff; margin-left:auto; border-bottom-right-radius:6px}
     .bub.ot{background:var(--card2); border:1px solid var(--bd); border-bottom-left-radius:6px}
     #nav{
-      background:rgba(10,10,11,.85) !important; backdrop-filter:blur(20px);
-      border-top:1px solid var(--bd) !important; padding-bottom:env(safe-area-inset-bottom) !important;
+      background:rgba(20,20,22,.35) !important;
+      backdrop-filter:blur(25px) saturate(180%) !important;
+      -webkit-backdrop-filter:blur(25px) saturate(180%) !important;
+      border-top:1px solid rgba(255,255,255,.18) !important;
+      box-shadow:0 -10px 40px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.15) !important;
+      padding-bottom:env(safe-area-inset-bottom) !important;
     }
     #nav button{font-size:10px; font-weight:600}
-
-    /* 3 - AUDITORIA: ESTADOS QUE FALTABAN */
     .skeleton{height:480px; background:linear-gradient(90deg,#1a1a1a 25%,#242424 50%,#1a1a1a 75%); background-size:200% 100%; animation:sk 1.2s infinite; border-radius:22px; margin:12px}
     @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
     .empty-state{text-align:center; padding:60px 20px; color:var(--mut)}
@@ -104,6 +127,13 @@ const EM={};
 const GR=['#6a00f4,#c026d3','#4c1d95,#7C3AED','#1e1b4b,#7C3AED','#5b21b6,#db2777','#312e81,#a855f7'];
 let me=null,prof=null,picks=[],cat='Todos',xit=false,pc='Público',pcat='Comedia',more=false,POSTS=[],MY=[],CIRC=[],CH=[],MS=[],cur=null,pins=[],recd=null,fileKind='',msKey='';
 const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// FORMATO TIKTOK: 100000 -> 100K, 1250000 -> 1.2M
+const fmt=n=>{
+  n=+n||0;
+  if(n>=1000000) return (n/1000000).toFixed(n%1000000===0?0:1).replace(/\.0$/,'')+'M';
+  if(n>=1000) return (n/1000).toFixed(n%1000===0?0:1).replace(/\.0$/,'')+'K';
+  return String(n);
+};
 const err=r=>{if(r&&r.error){toast(r.error.message);console.error(r.error);return true}return false};
 const badge=c=>`<svg width="20" height="20" viewBox="0 0 24 24" style="display:inline"><circle cx="12" cy="12" r="11" fill="${c}"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const DEFAULT_BANNER='data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360"><rect width="1200" height="360" fill="#1d211b"/><path d="M-40 290 280 30M180 390 520 40M500 390 850 0M820 390 1180 70" stroke="#c6ff4a" stroke-width="2" opacity=".45"/><path d="M0 310h1200M0 40h1200" stroke="#c6ff4a" stroke-width="1" opacity=".2"/><text x="62" y="235" fill="#fff8e7" font-family="Arial,sans-serif" font-size="116" font-weight="700">/Gelxit</text><circle cx="1100" cy="70" r="28" fill="#c6ff4a" opacity=".9"/></svg>`);
@@ -235,9 +265,9 @@ async function feed(){
    ${p.video_url?`<video src="${E(p.video_url)}" loop muted playsinline preload="metadata" class="absolute inset-0 w-full h-full object-cover" onclick="this.muted=!this.muted"></video>`:p.foto_url?`<img src="${E(p.foto_url)}" class="absolute inset-0 w-full h-full object-cover">`:`<div class="absolute inset-0 flex items-center justify-center text-[110px] opacity-40">${svg('spark')}</div>`}
    <div class="absolute inset-x-0 bottom-0 h-1/2 pointer-events-none" style="background:linear-gradient(transparent,#000b)"></div>
    <div class="absolute right-3 flex flex-col gap-4" style="bottom:90px">
-     <button class="act ${p.mine?'liked':''}" onclick="doXit('${p.id}',this)">${svg('plus','act-icon')}<span>${p.xc}</span></button>
+     <button class="act ${p.mine?'liked':''}" onclick="doXit('${p.id}',this)">${svg('plus','act-icon')}<span>${fmt(p.xc)}</span></button>
      <button class="act" onclick="this.classList.toggle('liked');this.classList.toggle('liked')">${svg('heart','act-icon')}Like</button>
-     <button class="act" onclick="toast('Comentarios (próximamente)')">${svg('comment','act-icon')}${p.comentarios_count||0}</button>
+     <button class="act" onclick="toast('Comentarios (próximamente)')">${svg('comment','act-icon')}${fmt(p.comentarios_count||0)}</button>
      <button class="act" onclick="toast('Enlace copiado')">${svg('share','act-icon')}Compartir</button>
      <button class="act" onclick="this.classList.toggle('saved');toast('Guardado')">${svg('bookmark','act-icon')}Guardar</button>
    </div>
@@ -251,12 +281,12 @@ async function doXit(id,b){
   const p=POSTS.find(x=>String(x.id)===String(id));if(!p)return;
   if(p.mine){const r=await sb.from('xits').delete().eq('post_id',p.id).eq('user_id',me.id);if(err(r))return;p.mine=false;p.xc--}
   else{const r=await sb.from('xits').insert({post_id:p.id,user_id:me.id});if(err(r))return;p.mine=true;p.xc++;toast('Xit enviado')}
-  b.classList.toggle('liked',p.mine);b.querySelector('span').textContent=p.xc;
+  b.classList.toggle('liked',p.mine);b.querySelector('span').textContent=fmt(p.xc);
   sb.from('posts').update({xits_count:p.xc}).eq('id',p.id).then(()=>{});
 }
 async function trend(){
   if(!POSTS.length)await loadPosts();
-  $('#trend').innerHTML=[...POSTS].sort((a,b)=>b.xc-a.xc).slice(0,10).map((p,i)=>`<button class="card p-3 flex items-center gap-3 text-left" data-c="${E(p.categoria)}" onclick="goCat(this.dataset.c)"><span class="text-3xl">${svg('spark')}</span><div class="flex-1"><b>@${E(p.pr.username||'usuario')}</b><div class="text-sm" style="color:var(--mut)">${E(p.titulo)}</div></div><span class="text-sm font-bold" style="color:var(--p)">${svg('plus')} ${p.xc}</span></button>`).join('')||'<p class="text-sm" style="color:var(--mut)">Aún no hay Xits pegando.</p>';
+  $('#trend').innerHTML=[...POSTS].sort((a,b)=>b.xc-a.xc).slice(0,10).map((p,i)=>`<button class="card p-3 flex items-center gap-3 text-left" data-c="${E(p.categoria)}" onclick="goCat(this.dataset.c)"><span class="text-3xl">${svg('spark')}</span><div class="flex-1"><b>@${E(p.pr.username||'usuario')}</b><div class="text-sm" style="color:var(--mut)">${E(p.titulo)}</div></div><span class="text-sm font-bold" style="color:var(--p)">${svg('plus')} ${fmt(p.xc)}</span></button>`).join('')||'<p class="text-sm" style="color:var(--mut)">Aún no hay Xits pegando.</p>';
 }
 
 /* ---------- CREAR ---------- */
@@ -279,11 +309,8 @@ async function publicar(){
 
 /* ---------- CÍRCULOS ---------- */
 async function loadCirc(){const r=await sb.from('circulos').select('*').eq('user_id',me.id).order('creado_en');CIRC=r.data||[]}
-function circList(){$('#circList').innerHTML=CIRC.map(c=>`<div class="card p-4 flex items-center gap-3"><span class="text-3xl">${svg('spark')}</span><div class="flex-1"><b>${E(c.nombre)}</b><div class="text-sm" style="color:var(--mut)">${c.miembros||0} personas</div></div><button class="pill" data-c="${E(c.nombre)}" onclick="pc=this.dataset.c;go('create')">Subir aquí</button></div>`).join('')}
+function circList(){$('#circList').innerHTML=CIRC.map(c=>`<div class="card p-4 flex items-center gap-3"><span class="text-3xl">${svg('spark')}</span><div class="flex-1"><b>${E(c.nombre)}</b><div class="text-sm" style="color:var(--mut)">${fmt(c.miembros||0)} personas</div></div><button class="pill" data-c="${E(c.nombre)}" onclick="pc=this.dataset.c;go('create')">Subir aquí</button></div>`).join('')}
 async function newCirc(){const n=(prompt('Nombre del círculo')||'').trim();if(!n)return;const r=await sb.from('circulos').insert({user_id:me.id,nombre:n,miembros:0});if(err(r))return;await loadCirc();circList()}
-
-/* ---------- PERFIL ---------- */
-/* Perfil principal se define en la sección v2 más abajo. */
 
 /* ---------- CHAT (messages + Realtime) ---------- */
 async function chats(){
@@ -415,7 +442,7 @@ async function adm(id,col){
 async function verUser(id){
   const [a,b,f]=await Promise.all([sb.from('profiles').select('*').eq('id',id).single(),sb.from('posts').select('*',{count:'exact',head:true}).eq('user_id',id),sb.from('follows').select('id').eq('seguidor_id',me.id).eq('seguido_id',id).maybeSingle()]);
   const u=a.data;if(!u)return toast('No se pudo cargar');
-  $('#sheetc').innerHTML=`<div style="height:90px;background:${bannerBackground(u.banner_url)}"></div><div class="flex flex-col items-center text-center px-6 pb-6" style="margin-top:-36px"><div style="border:4px solid var(--bg);border-radius:999px">${av(u,72)}</div><h3 class="mt-2 text-lg font-extrabold">${E(u.nombre||u.username)} ${vbadge(u)}</h3><div class="text-sm" style="color:var(--mut)">@${E(u.username)}${isOwner(u)?' · <span style="color:#f5c518;font-weight:700">Creador de Gelxit</span>':''}</div><p class="mt-2 text-sm">${E(u.bio||'')}</p><div class="flex gap-6 mt-3 text-sm"><span><b>${u.seguidores_count||0}</b> seguidores</span><span><b>${b.count||0}</b> Xits</span></div><div class="flex gap-2 mt-4 w-full">${u.id===me.id?'':`<button class="btn" id="fb" style="padding:10px" onclick="seguir('${id}')">${f.data?'Siguiendo':'Seguir'}</button>`}<button class="btn2" style="padding:10px" onclick="$('#sheet').classList.add('hidden')">Cerrar</button></div></div>`;
+  $('#sheetc').innerHTML=`<div style="height:90px;background:${bannerBackground(u.banner_url)}"></div><div class="flex flex-col items-center text-center px-6 pb-6" style="margin-top:-36px"><div style="border:4px solid var(--bg);border-radius:999px">${av(u,72)}</div><h3 class="mt-2 text-lg font-extrabold">${E(u.nombre||u.username)} ${vbadge(u)}</h3><div class="text-sm" style="color:var(--mut)">@${E(u.username)}${isOwner(u)?' · <span style="color:#f5c518;font-weight:700">Creador de Gelxit</span>':''}</div><p class="mt-2 text-sm">${E(u.bio||'')}</p><div class="flex gap-6 mt-3 text-sm"><span><b>${fmt(u.seguidores_count||0)}</b> seguidores</span><span><b>${fmt(b.count||0)}</b> Xits</span></div><div class="flex gap-2 mt-4 w-full">${u.id===me.id?'':`<button class="btn" id="fb" style="padding:10px" onclick="seguir('${id}')">${f.data?'Siguiendo':'Seguir'}</button>`}<button class="btn2" style="padding:10px" onclick="$('#sheet').classList.add('hidden')">Cerrar</button></div></div>`;
   $('#sheet').classList.remove('hidden');
 }
 async function seguir(id){
@@ -432,16 +459,16 @@ async function perfil(){
   $('#pn').textContent=p.nombre||p.username;
   $('#pu').innerHTML='@'+E(p.username)+(isOwner(p)?' · <span style="color:var(--p);font-weight:700">Creador de Gelxit</span>':'');
   $('#pb').textContent=p.bio||'Cuéntale al mundo quién eres';
-  $('#ps').textContent=p.seguidores_count||0;$('#pg').textContent=p.siguiendo_count||0;
+  $('#ps').textContent=fmt(p.seguidores_count||0);$('#pg').textContent=fmt(p.siguiendo_count||0);
   $('#vb').innerHTML=vbadge(p);
   $('#b1').innerHTML=badge('#2563EB');$('#b2').innerHTML=badge('#7C3AED');
   $('#v1').textContent=p.verificado_identidad?'Verificado ':'Pronto';$('#v2').textContent=p.verificado_premium?'Verificado ':'Pronto';
   $('#adm').innerHTML=isAdmin()?`<button class="btn2 mt-3" style="border-color:var(--p)" onclick="go('admin')">${svg('crown','verified-icon')} Panel de Dueño</button>`:'';
   setAv();
   const r=await sb.from('posts').select('*').eq('user_id',me.id).order('creado_en',{ascending:false});
-  MY=r.data||[];$('#pv').textContent=MY.length;
+  MY=r.data||[];$('#pv').textContent=fmt(MY.length);
   let xc=0;if(MY.length){const x=await sb.from('xits').select('*',{count:'exact',head:true}).in('post_id',MY.map(v=>v.id));xc=x.count||0}
-  $('#px').textContent=xc;grid();
+  $('#px').textContent=fmt(xc);grid();
 }
 async function upAvatar(i){
   const f=i.files[0];i.value='';if(!f)return;toast('Subiendo foto…');
@@ -532,7 +559,7 @@ async function verVistas(id){
   clearTimeout(SV.t);
   const r=await sb.from('historia_vistas').select('user_id').eq('historia_id',id),ids=(r.data||[]).map(x=>x.user_id);
   const p=ids.length?(await sb.from('profiles').select('id,username,nombre,avatar_url,foto_url').in('id',ids)).data||[]:[];
-  $('#sheetc').innerHTML=`<div class="p-5"><b> ${p.length} vieron tu historia</b><div class="mt-3 flex flex-col gap-2 max-h-72 overflow-y-auto">${p.map(u=>`<div class="flex items-center gap-3">${av(u,36)}<span>@${E(u.username)}</span></div>`).join('')||'<span class="text-sm" style="color:var(--mut)">Aún nadie</span>'}</div><button class="btn2 mt-4" onclick="$('#sheet').classList.add('hidden');showS()">Cerrar</button></div>`;
+  $('#sheetc').innerHTML=`<div class="p-5"><b> ${fmt(p.length)} vieron tu historia</b><div class="mt-3 flex flex-col gap-2 max-h-72 overflow-y-auto">${p.map(u=>`<div class="flex items-center gap-3">${av(u,36)}<span>@${E(u.username)}</span></div>`).join('')||'<span class="text-sm" style="color:var(--mut)">Aún nadie</span>'}</div><button class="btn2 mt-4" onclick="$('#sheet').classList.add('hidden');showS()">Cerrar</button></div>`;
   $('#sheet').classList.remove('hidden');
 }
 async function dm(uid){
