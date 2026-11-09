@@ -10,7 +10,7 @@ async function signU(v){
   if(!r.error)SIGN.set(p,{url:r.data.signedUrl,exp:Date.now()+3300e3});
 }
 
-/* 1. Chat privado: fotos, videos y audios van al bucket privado "chat" */
+/* 1. Chat privado */
 const _upl=upl;
 upl=async function(bucket,path,f){
   const chat=(bucket==='posts'&&/^[^/]+\/chat-/.test(path))||bucket==='audios';
@@ -34,7 +34,7 @@ drawMsgs=function(mode='stay'){
   if(need.length)Promise.all(need.map(signU)).then(()=>_draw('stay'));
 };
 
-/* 2. Ajustes: el panel ya no se rompe al refrescar (bloquear/desbloquear) */
+/* 2. Ajustes */
 const _rs=renderSettings;
 renderSettings=function(n){
   const b=$('#s-'+n+' [data-panel]');
@@ -42,7 +42,7 @@ renderSettings=function(n){
   return _rs(n);
 };
 
-/* 3. Círculos: muestra errores y crea los de inicio si el usuario no tiene */
+/* 3. Círculos */
 loadCirc=async function(){
   const r=await sb.from('circulos').select('*').eq('user_id',me.id).order('creado_en');
   if(r.error){console.error(r.error);CIRC=[];return}
@@ -52,22 +52,12 @@ loadCirc=async function(){
     if(s.error)console.error(s.error);else CIRC=s.data;
   }
 };
-})();
-(()=>{
-const _av=av;
+
+/* 4. Fotos de perfil: sin foto, muestra la inicial */
 av=function(p,s=40){
-  const h=_av(p,s);
-  if(!h.startsWith('<img'))return h;
-  const fb=_av({...p,avatar_url:'',foto_url:''},s).replace(/"/g,'&quot;');
-  return h.replace('<img ','<img onerror="this.onerror=null;this.outerHTML=this.dataset.fb" data-fb="'+fb+'" ');
-};
-})();
-(()=>{
-const _av=av;
-av=function(p,s=40){
-  const h=_av(p,s);
-  if(!h.startsWith('<img'))return h;
-  const fb=_av({...p,avatar_url:'',foto_url:''},s).replace(/"/g,'&quot;');
-  return h.replace('<img ','<img onerror="this.onerror=null;this.outerHTML=this.dataset.fb" data-fb="'+fb+'" ');
+  p=p||{};
+  const r=p.avatar_url||p.foto_url,u=typeof r==='string'&&/^https?:\/\//.test(r)?r:'';
+  if(u)return '<img src="'+E(u)+'" alt="" class="rounded-full object-cover flex-none" style="width:'+s+'px;height:'+s+'px">';
+  return '<span aria-hidden="true" class="rounded-full flex-none inline-flex items-center justify-center font-bold text-white" style="width:'+s+'px;height:'+s+'px;font-size:'+Math.round(s/2.2)+'px;background:var(--p)">'+E((p.nombre||p.username||'?')[0].toUpperCase())+'</span>';
 };
 })();
