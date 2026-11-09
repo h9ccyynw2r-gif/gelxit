@@ -609,8 +609,7 @@ document.addEventListener('change', async (e)=>{
   const k=e.target.dataset.cfg; if(k){ await saveCfg({[k]:e.target.checked}); return; }
   const ks=e.target.dataset.cfgSelect; if(ks){ await saveCfg({[ks]:e.target.value}); if(ks==='tema') document.documentElement.dataset.theme=e.target.value; }
 });
-setInterval(renderRealSettings, 1000);
-// === PARCHE BANEO POR DIAS - PEGAR AL FINAL DE APP.JS ===
+
 async function banConTiempo(id, btn){
   const card = btn.closest('div');
   // Busca los controles que están en esa tarjeta
