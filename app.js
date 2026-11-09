@@ -621,3 +621,54 @@ document.addEventListener('change', async (e)=>{
   const ks = e.target.dataset.cfgSelect; if(ks){ await saveCfg({[ks]: e.target.value}); if(ks==='tema') document.documentElement.dataset.theme = e.target.value; }
 });
 setInterval(renderRealSettings, 1000);
+// === SOLO BANEO POR DIAS - NO TOCA NADA MAS ===
+async function banUser(id){
+  const sel = document.getElementById('ban-tiempo-'+id);
+  const diasInput = document.getElementById('ban-dias-'+id);
+  const motivoInput = document.getElementById('ban-motivo-'+id);
+  let val = sel ? sel.value : '0';
+  let dias = 0;
+  if(val === 'custom') dias = parseInt(diasInput?.value || '0');
+  else dias = parseInt(val || '0');
+  if(val === 'custom' && (!dias || dias <= 0)) return toast('Pon cuántos días, wey');
+  const motivo = motivoInput?.value?.trim() || 'Baneado por el dueño';
+  if(!confirm(dias === 0 ? '¿Banear PERMANENTE?' : '¿Banear por ' + dias + ' día(s)?')) return;
+  let patch = {baneado:true, ban_motivo:motivo, ban_hasta:null};
+  if(dias > 0){ const h = new Date(); h.setDate(h.getDate() + dias); patch.ban_hasta = h.toISOString(); }
+  const {error} = await sb.from('profiles').update(patch).eq('id', id);
+  if(error) return toast(error.message);
+  toast(dias === 0 ? 'Baneado permanente' : 'Baneado por ' + dias + ' día(s)');
+  adminList();
+}
+async function unbanUser(id){
+  const {error} = await sb.from('profiles').update({baneado:false, ban_hasta:null, ban_motivo:null}).eq('id', id);
+  if(error) return toast(error.message);
+  toast('Desbaneado'); adminList();
+}
+// Tu adminList original, pero con el selector de días agregado
+async function adminList(){
+  if(!isAdmin()) return;
+  const q = ($('#aq').value || '').trim().replace(/^@/, '').toLowerCase();
+  let r = sb.from('profiles').select('*').order('creado_en', {ascending:false}).limit(100);
+  if(q) r = r.ilike('username', '%'+q+'%');
+  const {data, error} = await r; if(error) return toast(error.message);
+  USERS = data;
+  $('#alist').innerHTML = data.map(u => `<div class="card p-3 flex flex-col gap-2"><div class="flex items-center gap-3">${av(u,44)}<div class="flex-1 min-w-0"><b>${E(u.nombre || u.username)}</b> ${vbadge(u)}<div class="text-sm" style="color:var(--mut)">@${E(u.username)}${u.baneado ? ' · <span style="color:var(--danger)">baneado' + (u.ban_hasta ? ' hasta ' + new Date(u.ban_hasta).toLocaleDateString('es-MX') : ' permanente') + '</span>' : ''}</div></div></div>
+   <div class="flex flex-wrap gap-2">
+    <button class="pill" onclick="adm('${u.id}','verificado_identidad')">${u.verificado_identidad ? 'Quitar verificación' : 'Verificar'}</button>
+    <button class="pill" onclick="adm('${u.id}','verificado_premium')">${u.verificado_premium ? 'Quitar Premium' : 'Dar Premium'}</button>
+    ${u.baneado ? `<button class="pill" onclick="unbanUser('${u.id}')">Desbanear</button>` : ''}
+    <button class="pill" onclick="verUser('${u.id}')">Ver perfil</button></div>
+   ${!u.baneado ? `<div style="background:#00000040;padding:10px;border-radius:12px"><b style="font-size:13px">⏳ ¿Cuánto lo baneas?</b><select id="ban-tiempo-${u.id}" style="width:100%;padding:10px;border-radius:10px;background:#111;color:#fff;margin-top:8px"><option value="0">♾️ Permanente</option><option value="1">1 día</option><option value="7">7 días</option><option value="30">30 días</option><option value="custom">✏️ Días personalizados</option></select><input id="ban-dias-${u.id}" type="number" min="1" placeholder="¿Cuántos días? Ej: 3" style="width:100%;padding:10px;border-radius:10px;background:#111;color:#fff;margin-top:8px"><input id="ban-motivo-${u.id}" placeholder="Motivo (opcional)" style="width:100%;padding:10px;border-radius:10px;background:#111;color:#fff;margin-top:8px"><button class="pill" style="width:100%;background:#ef4444;color:#fff;margin-top:8px" onclick="banUser('${u.id}')">Banear con este tiempo</button></div>` : ''}
+   </div>`).join('') || '<p class="text-sm" style="color:var(--mut)">Sin resultados.</p>';
+}
+// Si ya cumplió sus días, que entre solo en vez de dejarlo en pantalla de baneado
+const _startOriginal = start;
+start = async function(u){
+  let {data:p} = await sb.from('profiles').select('*').eq('id', u.id).maybeSingle();
+  if(p && p.baneado && p.ban_hasta && new Date(p.ban_hasta) < new Date()){
+    await sb.from('profiles').update({baneado:false, ban_hasta:null, ban_motivo:null}).eq('id', u.id);
+    p.baneado = false;
+  }
+  return _startOriginal(u);
+};
