@@ -61,3 +61,10 @@ button,.pill,.chip,.icon-btn,.btn,.btn2{min-height:44px}
 @media(min-width:768px){#nav{max-width:620px;margin:0 auto;left:0;right:0}}
 
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.gx-bar::after{width:100%;animation:none}}
+
+/* Perfil: nombre + corona + insignias en una sola línea, centradas con el nombre */
+#s-profile h2{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:nowrap}
+#vb{display:inline-flex;align-items:center;gap:6px;flex:none;flex-wrap:nowrap;line-height:0}
+#vb svg{display:block;flex:none;vertical-align:baseline}
+#vb .verified-icon{width:22px;height:22px}
+#vb svg[role="img"]{width:22px;height:22px}

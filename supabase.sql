@@ -121,5 +121,7 @@ do $$ begin alter publication supabase_realtime add table public.messages; excep
 -- 8) OPCIONAL: borrar historias vencidas cada hora (activa primero la extensión pg_cron en Database → Extensions)
 -- select cron.schedule('gx-borrar-historias', '0 * * * *', $$ delete from public.historias where expira_en < now() $$);
 
--- 9) Asegura tu cuenta de dueño (cambia nada si ya lo hiciste)
-update public.profiles set es_creador = true where username = 'angelxit';
+-- 9) Cuenta de dueño: ya está asignada. NO vuelvas a promover por nombre de usuario:
+--    si esa cuenta se borra, quien registre el mismo nombre quedaría como dueño.
+--    Si algún día necesitas asignarla de nuevo, hazlo por ID de usuario (Authentication → Users → UID):
+-- update public.profiles set es_creador = true where id = 'PEGA-AQUI-EL-UID';
