@@ -41,7 +41,7 @@ renderSettings=async function(n){
   if(b){b.classList.add('settings-placeholder');delete b.dataset.panel}
   await _rs(n);
   const ci=$('[data-cfgsel="color_acento"]');
-  if(ci&&!/^#[0-9a-f]{6}$/i.test((CFG&&CFG.color_acento)||''))ci.value='#c6ff4a';
+  if(ci&&!/^#[0-9a-f]{6}$/i.test((CFG&&CFG.color_acento)||''))ci.value='#a0fbfd';
 };
 
 /* 3. Círculos */
@@ -62,7 +62,7 @@ av=function(p,s=40){
   if(u)return '<img src="'+E(u)+'" alt="" class="rounded-full object-cover flex-none" style="width:'+s+'px;height:'+s+'px">';
   return '<span aria-hidden="true" class="rounded-full flex-none inline-flex items-center justify-center font-bold" style="color:#10130d;width:'+s+'px;height:'+s+'px;font-size:'+Math.round(s/2.2)+'px;background:var(--p)">'+E((p.nombre||p.username||'?')[0].toUpperCase())+'</span>';
 };
-/* 5. Color lima por defecto */
+/* 5. Color aqua por defecto */
 const _ac=applyCfg;
 applyCfg=function(){
   if(CFG&&/^#6a00f4$/i.test(CFG.color_acento||''))CFG={...CFG,color_acento:null};
@@ -70,13 +70,13 @@ applyCfg=function(){
 };
 const st=document.createElement('style');
 st.textContent=[
-'html:root,html:root[data-theme="dark"],html:root[data-theme="light"]{--p:#c6ff4a}',
+'html:root,html:root[data-theme="dark"],html:root[data-theme="light"]{--p:#a0fbfd}',
 '.btn,.bub.me,.act.liked,#xbtn,.chip.on{color:#10130d!important}',
 '#av,#av2{color:#10130d}',
-'#s-home{background:radial-gradient(circle at 50% 25%,#c6ff4a2e,transparent 60%),var(--bg)!important}',
-'img[alt="Logo Gelxit"]{box-shadow:0 20px 60px #c6ff4a55!important}',
-'#xbtn{box-shadow:0 6px 20px #c6ff4a88!important}'
+'#s-home{background:radial-gradient(circle at 50% 25%,#a0fbfd2e,transparent 60%),var(--bg)!important}',
+'img[alt="Logo Gelxit"]{box-shadow:0 20px 60px #a0fbfd55!important}',
+'#xbtn{box-shadow:0 6px 20px #a0fbfd88!important}'
 ].join('\n');
 document.head.appendChild(st);
-['av','av2'].forEach(id=>{const e=document.getElementById(id);if(e&&e.style.background.includes('gradient'))e.style.background='linear-gradient(135deg,#c6ff4a,#8fd11f)'});
+['av','av2'].forEach(id=>{const e=document.getElementById(id);if(e&&e.style.background.includes('gradient'))e.style.background='linear-gradient(135deg,#a0fbfd,#5fd0d6)'});
 })();
