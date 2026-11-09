@@ -499,13 +499,27 @@ function btn(label, id, color){
 function getScreenTitle(){
   const titles = ['Gestión del perfil','Personalización','Notificaciones','Privacidad','Seguridad','Cuenta'];
   const els = [...document.querySelectorAll('h1,h2,h3,div,span,b')];
-  for(const t of titles){
-    const found = els.find(el => el.textContent?.trim() === t && el.children.length === 0);
-    if(found) return t;
+  const visibles = els.filter(el => {
+    if(!el.textContent || el.textContent.trim() === '') return false;
+    if(el.children.length !== 0) return false;
+    const r = el.getBoundingClientRect();
+    if(r.width === 0 || r.height === 0) return false;
+    const style = getComputedStyle(el);
+    if(style.display === 'none' || style.visibility === 'hidden') return false;
+    let p = el.parentElement;
+    while(p && p !== document.body){
+      if(getComputedStyle(p).display === 'none') return false;
+      p = p.parentElement;
+    }
+    return true;
+  });
+  visibles.sort((a,b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
+  for(const el of visibles){
+    const t = el.textContent.trim();
+    if(titles.includes(t)) return t;
   }
   return '';
-}
-async function renderRealSettings(){
+}async function renderRealSettings(){
   const all = [...document.querySelectorAll('div, p, span')];
   const placeholder = all.find(el => el.textContent?.trim() === 'Esta sección está lista para conectar sus controles reales.');
   if(!placeholder) return;
