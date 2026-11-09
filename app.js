@@ -469,3 +469,67 @@ async function respH(){
   const r=await sb.from('messages').insert({chat_id:c,user_id:me.id,texto:'Respuesta a tu historia: '+t});if(err(r))return;
   $('#svr').value='';toast('Respuesta enviada');
 }
+// === CONFIG REAL GELXIT V2 - SUPABASE - UNICO BLOQUE ===
+let __cfgCache = null;
+async function getCfg(){
+  if(!me) return null;
+  if(__cfgCache) return __cfgCache;
+  const {data} = await sb.from('user_settings').select('*').eq('user_id', me.id).maybeSingle();
+  if(data){ __cfgCache = data; return data; }
+  const {data:created} = await sb.from('user_settings').insert({user_id: me.id}).select().single();
+  __cfgCache = created || {};
+  return __cfgCache;
+}
+async function saveCfg(patch){
+  if(!me) return;
+  __cfgCache = {...(__cfgCache||{}), ...patch};
+  const {error} = await sb.from('user_settings').upsert({user_id: me.id, ...patch, updated_at: new Date().toISOString()});
+  if(error) return toast(error.message);
+  toast('Guardado en Supabase');
+}
+function sw(label, key, val, desc){
+  return `<label style="display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid #ffffff14;cursor:pointer"><span><b style="display:block">${label}</b><small style="opacity:.65">${desc}</small></span><input type="checkbox" data-cfg="${key}" ${val?'checked':''} style="width:44px;height:24px;accent-color:#6a00f4"></label>`;
+}
+function inp(label, key, val, ph){
+  return `<label style="display:block;margin:12px 0"><b>${label}</b><input data-cfg-input="${key}" value="${String(val??'').replace(/"/g,'')}" placeholder="${ph}" style="width:100%;margin-top:6px;padding:12px;border-radius:12px;background:#00000040;color:#fff;border:1px solid #ffffff20"></label>`;
+}
+function btn(label, id, color){
+  return `<button id="${id}" style="width:100%;padding:13px;border:0;border-radius:12px;background:${color||'#6a00f4'};color:#fff;font-weight:700;margin-top:12px">${label}</button>`;
+}
+async function renderRealSettings(){
+  const all = [...document.querySelectorAll('div, p, span')];
+  const placeholder = all.find(el => el.textContent?.trim() === 'Esta sección está lista para conectar sus controles reales.');
+  if(!placeholder) return;
+  const bodyText = document.body.innerText || '';
+  const cfg = await getCfg() || {};
+  const prof2 = prof || {};
+  const box = placeholder.parentElement || placeholder;
+  let html = '';
+  if(bodyText.includes('Cuenta')){
+    html = `<p style="opacity:.7">Administra los datos básicos asociados a tu cuenta.</p><p><b>Email:</b> ${E(me?.email||'')}</p>${btn('Cerrar sesión','cfg-logout','#ef4444')}${btn('Eliminar mi cuenta','cfg-delete','#7f1d1d')}`;
+  } else if(bodyText.includes('Privacidad')){
+    html = `<p style="opacity:.7">Define cómo se comparte tu contenido.</p>${sw('Perfil público','perfil_publico',cfg.perfil_publico,'Si lo apagas, nadie ve tu perfil')}${sw('Permitir que me encuentren','permitir_busqueda',cfg.permitir_busqueda,'Apareces en búsqueda')}${sw('Permitir mensajes','permitir_mensajes',cfg.permitir_mensajes,'Otros pueden escribirte')}${sw('Mostrar mi actividad','mostrar_actividad',cfg.mostrar_actividad,'Se muestra si estás activo')}`;
+  } else if(bodyText.includes('Seguridad')){
+    html = `<p style="opacity:.7">Protege tu cuenta.</p>${inp('Nueva contraseña','new-pass','','Mínimo 6 caracteres')}${btn('Cambiar contraseña','cfg-pass')}${btn('Cerrar sesión','cfg-logout2','#ef4444')}`;
+  } else if(bodyText.includes('Notificaciones')){
+    html = `<p style="opacity:.7">Configura los avisos.</p>${sw('Me gusta','notif_likes',cfg.notif_likes,'Cuando dan like')}${sw('Comentarios','notif_comentarios',cfg.notif_comentarios,'Cuando comentan')}${sw('Nuevos seguidores','notif_seguidores',cfg.notif_seguidores,'Cuando te siguen')}${sw('Mensajes','notif_mensajes',cfg.notif_mensajes,'Cuando te escriben')}`;
+  } else if(bodyText.includes('Personalización')){
+    html = `<p style="opacity:.7">Ajusta la apariencia de Gelxit.</p><label style="display:block;margin:12px 0"><b>Tema</b><select data-cfg-select="tema" style="width:100%;padding:12px;border-radius:12px;background:#111;color:#fff;margin-top:6px"><option value="dark" ${cfg.tema==='dark'?'selected':''}>Oscuro</option><option value="light" ${cfg.tema==='light'?'selected':''}>Claro</option></select></label><label style="display:block;margin:12px 0"><b>Color de acento</b><input type="color" data-cfg-select="color_acento" value="${cfg.color_acento||'#6a00f4'}" style="width:100%;height:44px"></label>${sw('Reproducción automática','autoplay',cfg.autoplay,'Videos solos')}`;
+  } else if(bodyText.includes('Gestión del perfil')){
+    html = `<p style="opacity:.7">Edita tu información pública.</p>${inp('Nombre','nombre',prof2.nombre,'Tu nombre')}${inp('Usuario','username',prof2.username,'@usuario')}${inp('Biografía','bio',prof2.bio,'Cuéntanos de ti...')}${btn('Guardar perfil','cfg-save-perfil')}`;
+  }
+  if(!html) return;
+  box.innerHTML = html;
+  if(cfg.tema) document.documentElement.dataset.theme = cfg.tema;
+}
+document.addEventListener('click', async (e)=>{
+  if(e.target.id === 'cfg-logout' || e.target.id === 'cfg-logout2'){ await sb.auth.signOut(); location.reload(); }
+  if(e.target.id === 'cfg-delete'){ if(!confirm('¿Seguro que quieres eliminar tu cuenta?')) return; await sb.from('profiles').delete().eq('id', me.id); await sb.auth.signOut(); location.reload(); }
+  if(e.target.id === 'cfg-pass'){ const pass = document.querySelector('[data-cfg-input="new-pass"]')?.value; if(!pass || pass.length < 6) return toast('Pon mínimo 6'); const {error} = await sb.auth.updateUser({password: pass}); if(error) return toast(error.message); toast('Contraseña cambiada'); }
+  if(e.target.id === 'cfg-save-perfil'){ const nombre = document.querySelector('[data-cfg-input="nombre"]')?.value; const username = document.querySelector('[data-cfg-input="username"]')?.value; const bio = document.querySelector('[data-cfg-input="bio"]')?.value; const {error} = await sb.from('profiles').update({nombre, username, bio}).eq('id', me.id); if(error) return toast(error.message); toast('Perfil guardado'); location.reload(); }
+});
+document.addEventListener('change', async (e)=>{
+  const k = e.target.dataset.cfg; if(k){ await saveCfg({[k]: e.target.checked}); return; }
+  const ks = e.target.dataset.cfgSelect; if(ks){ await saveCfg({[ks]: e.target.value}); if(ks==='tema') document.documentElement.dataset.theme = e.target.value; }
+});
+setInterval(renderRealSettings, 500);
