@@ -12,7 +12,8 @@ Red social de Xits (videos, fotos, audios), historias, lives, círculos y chat p
 | `gelxit-patch.js` | Ajustes que se cargan después de `app.js` (chat privado, ajustes, avatares) |
 | `supabase.sql` | Esquema y políticas de seguridad (parcial, ver nota) |
 | `supabase-security-check.sql` | Consulta de solo lectura para auditar la base real |
-| `_headers` | Evita que Cloudflare Pages/el navegador sirvan versiones viejas |
+| `supabase-hardening.sql` | Límites de tamaño y tipo de archivo por bucket (opcional) |
+| `_headers` | Evita versiones viejas en caché y agrega cabeceras de seguridad |
 
 ## Publicar
 

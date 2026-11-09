@@ -12,3 +12,10 @@
   Cache-Control: no-cache
 /gelxit-patch.js
   Cache-Control: no-cache
+
+# Seguridad: aplica a todo el sitio
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(self), microphone=(self), geolocation=(), payment=()
