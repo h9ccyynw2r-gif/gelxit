@@ -16,7 +16,12 @@ update storage.buckets set file_size_limit = 5242800,
 
 update storage.buckets set file_size_limit = 52428800,
   allowed_mime_types = array['image/jpeg','image/png','image/webp','image/gif','image/heic','image/heif','image/avif','video/*']
-  where id in ('posts','historias','chat');
+  where id in ('posts','historias');
+
+-- El chat privado también guarda las notas de voz, por eso admite audio.
+update storage.buckets set file_size_limit = 52428800,
+  allowed_mime_types = array['image/jpeg','image/png','image/webp','image/gif','image/heic','image/heif','image/avif','video/*','audio/*']
+  where id = 'chat';
 
 update storage.buckets set file_size_limit = 26214400,
   allowed_mime_types = array['audio/*','video/mp4','video/webm']

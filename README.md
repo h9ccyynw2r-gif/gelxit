@@ -12,7 +12,9 @@ Red social de Xits (videos, fotos, audios), historias, lives, círculos y chat p
 | `gelxit-patch.js` | Ajustes que se cargan después de `app.js` (chat privado, ajustes, avatares) |
 | `supabase.sql` | Esquema y políticas de seguridad (parcial, ver nota) |
 | `supabase-security-check.sql` | Consulta de solo lectura para auditar la base real |
-| `supabase-hardening.sql` | Límites de tamaño y tipo de archivo por bucket (opcional) |
+| `supabase-seguridad-1.sql` | Permisos, funciones y Storage: endurecimiento sin cambio de comportamiento |
+| `supabase-seguridad-2.sql` | Aplica baneos y bloqueos en el servidor (probar con 2 cuentas) |
+| `supabase-hardening.sql` | Límites de tamaño y tipo de archivo por bucket |
 | `_headers` | Evita versiones viejas en caché y agrega cabeceras de seguridad |
 
 ## Publicar
