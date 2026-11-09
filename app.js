@@ -672,3 +672,14 @@ start = async function(u){
   }
   return _startOriginal(u);
 };
+// === FIX ESPACIO NEGRO DEL CHAT - SOLO ESO ===
+(function(){
+  const st = document.createElement('style');
+  st.textContent = `
+    #s-chat{height:100dvh !important; display:flex !important; flex-direction:column !important; padding-bottom:0 !important; overflow:hidden !important}
+    #msgs{flex:1 !important; overflow-y:auto !important; padding-bottom:12px !important}
+    #inp{padding:10px 10px calc(10px + env(safe-area-inset-bottom)) !important; padding-bottom:10px !important; position:sticky !important; bottom:0 !important; margin:0 !important; background:#111 !important; z-index:9999 !important; display:flex !important; gap:8px !important; align-items:center !important}
+    #s-chat .spacer, #s-chat > div:last-child{padding-bottom:0 !important; margin-bottom:0 !important}
+  `;
+  document.head.appendChild(st);
+})();
