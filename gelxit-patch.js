@@ -53,3 +53,12 @@ loadCirc=async function(){
   }
 };
 })();
+(()=>{
+const _av=av;
+av=function(p,s=40){
+  const h=_av(p,s);
+  if(!h.startsWith('<img'))return h;
+  const fb=_av({...p,avatar_url:'',foto_url:''},s).replace(/"/g,'&quot;');
+  return h.replace('<img ','<img onerror="this.onerror=null;this.outerHTML=this.dataset.fb" data-fb="'+fb+'" ');
+};
+})();
