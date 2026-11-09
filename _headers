@@ -1,0 +1,14 @@
+# Cloudflare Pages: evita que el navegador sirva versiones viejas de la app.
+# El navegador pregunta si hay cambios (rápido, usa 304) antes de reutilizar el archivo.
+/
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
+/app.js
+  Cache-Control: no-cache
+/app.css
+  Cache-Control: no-cache
+/gelxit-fixes.css
+  Cache-Control: no-cache
+/gelxit-patch.js
+  Cache-Control: no-cache
