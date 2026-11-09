@@ -8,19 +8,22 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-<link rel="icon" href="logo.png.WEBP"><link rel="stylesheet" href="app.css">
-<style>/* FIX badge */
-    a[href*="netlify.com"], a[href*="netlify.app/?"], iframe[src*="netlify"], [id*="netlify" i], [class*="netlify" i]{display:none !important;}
-    #inp{padding-bottom:95px !important; position:relative !important; z-index:9999 !important;}
-    #s-chat{padding-bottom:20px !important;}
-</style>
+<link rel="icon" href="logo.png.WEBP">
+<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="gelxit-fixes.css">
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-b" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+<symbol id="i-f" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+<symbol id="i-m" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2c.4 4-2.5 5.2-2.5 8.2 0 1.2.6 2.1 1.5 2.8-.1-2.1 1.2-3.8 3-4.7 1.4 1.5 2.2 3.4 2.2 5.5a5.7 5.7 0 0 1-11.4 0C5.8 8.8 11.1 7.5 13 2Z"/></symbol>
+</defs></svg>
 <div id="app">
 
-<!-- 1 INICIO -->
+<!-- INICIO -->
 <section class="s items-center justify-between text-center px-8 py-10" id="s-home" style="background:radial-gradient(circle at 50% 25%,#7C3AED44,transparent 60%),var(--bg)">
-  <button onclick="tema()" class="icon-btn self-end" aria-label="Cambiar tema"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z"/></svg></button>
+  <button onclick="tema()" class="icon-btn self-end" aria-label="Cambiar tema"><svg class="ico"><use href="#i-m"/></svg></button>
   <div class="flex flex-col items-center gap-5">
     <img src="logo.png.WEBP" alt="Logo Gelxit" class="w-56 h-56 rounded-[44px] shadow-2xl" style="box-shadow:0 20px 60px #7C3AE766">
     <h1 class="text-4xl font-extrabold tracking-tight">Gelxit</h1>
@@ -32,14 +35,14 @@
   </div>
 </section>
 
-<section class="s px-6 py-10 gap-3" id="s-reg"><button onclick="go('home')" class="icon-btn self-start" aria-label="Volver"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h2 class="text-3xl font-extrabold">Crear cuenta</h2><p class="text-sm mb-2" style="color:var(--mut)">Solo con correo y contraseña.</p>
-<input id="rn" placeholder="Nombre"><input id="ru" placeholder="Usuario (sin @)" autocapitalize="none" autocomplete="username"><input id="re" type="email" placeholder="Correo" autocomplete="email"><input id="rp" type="password" placeholder="Contraseña (mín. 6)" autocomplete="new-password"><button class="btn mt-3" onclick="registro()">Crear cuenta</button><button class="text-sm" style="color:var(--p)" onclick="go('login')">Ya tengo cuenta</button></section>
-<section class="s px-6 py-10 gap-3" id="s-login"><button onclick="go('home')" class="icon-btn self-start" aria-label="Volver"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h2 class="text-3xl font-extrabold">Entrar</h2><p class="text-sm mb-2" style="color:var(--mut)">Qué bueno verte de nuevo </p>
+<section class="s px-6 py-10 gap-3" id="s-reg"><button onclick="go('home')" class="icon-btn self-start" aria-label="Volver"><svg class="ico"><use href="#i-b"/></svg></button><h2 class="text-3xl font-extrabold">Crear cuenta</h2><p class="text-sm mb-2" style="color:var(--mut)">Solo con correo y contraseña.</p>
+<input id="rn" placeholder="Nombre"><input id="ru" placeholder="Usuario (sin @)" autocapitalize="none" autocomplete="username"><input id="re" type="email" placeholder="Correo" autocomplete="email"><input id="rp" type="password" placeholder="Contraseña (mín. 8)" autocomplete="new-password"><button class="btn mt-3" onclick="registro()">Crear cuenta</button><button class="text-sm" style="color:var(--p)" onclick="go('login')">Ya tengo cuenta</button></section>
+<section class="s px-6 py-10 gap-3" id="s-login"><button onclick="go('home')" class="icon-btn self-start" aria-label="Volver"><svg class="ico"><use href="#i-b"/></svg></button><h2 class="text-3xl font-extrabold">Entrar</h2><p class="text-sm mb-2" style="color:var(--mut)">Qué bueno verte de nuevo</p>
 <input id="le" type="email" placeholder="Correo" autocomplete="email"><input id="lp" type="password" placeholder="Contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"><button class="btn mt-3" onclick="login()">Entrar</button><button class="text-sm" style="color:var(--p)" onclick="go('recover')">¿Olvidaste tu contraseña? Recupérala aquí</button><button class="text-sm" style="color:var(--mut)" onclick="go('reg')">Crear cuenta</button></section>
+<section class="s px-6 py-10 gap-3" id="s-recover"><button onclick="go('login')" class="icon-btn self-start" aria-label="Volver"><svg class="ico"><use href="#i-b"/></svg></button><h2 class="text-3xl font-extrabold">Recuperar acceso</h2><p class="text-sm mb-2" style="color:var(--mut)">Escribe tu correo y te enviaremos un enlace seguro.</p><input id="recoverEmail" type="email" placeholder="Correo" autocomplete="email"><button class="btn mt-3" onclick="recoverPassword()">Enviar enlace</button></section>
+<section class="s px-6 py-10 gap-3" id="s-reset"><h2 class="text-3xl font-extrabold">Nueva contraseña</h2><p class="text-sm mb-2" style="color:var(--mut)">Crea una contraseña nueva para volver a Gelxit.</p><input id="newPassword" type="password" placeholder="Nueva contraseña (mín. 8)" autocomplete="new-password"><input id="newPasswordConfirm" type="password" placeholder="Repite la contraseña" autocomplete="new-password"><button class="btn mt-3" onclick="updatePassword()">Guardar contraseña</button></section>
 
-<section class="s px-6 py-10 gap-3" id="s-recover"><button onclick="go('login')" class="icon-btn self-start" aria-label="Volver"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h2 class="text-3xl font-extrabold">Recuperar acceso</h2><p class="text-sm mb-2" style="color:var(--mut)">Escribe tu correo y te enviaremos un enlace seguro.</p><input id="recoverEmail" type="email" placeholder="Correo" autocomplete="email"><button class="btn mt-3" onclick="recoverPassword()">Enviar enlace</button></section>
-<section class="s px-6 py-10 gap-3" id="s-reset"><h2 class="text-3xl font-extrabold">Nueva contraseña</h2><p class="text-sm mb-2" style="color:var(--mut)">Crea una contraseña nueva para volver a Gelxit.</p><input id="newPassword" type="password" placeholder="Nueva contraseña (mín. 6)" autocomplete="new-password"><input id="newPasswordConfirm" type="password" placeholder="Repite la contraseña" autocomplete="new-password"><button class="btn mt-3" onclick="updatePassword()">Guardar contraseña</button></section>
-<!-- 2 ONBOARDING -->
+<!-- ONBOARDING -->
 <section class="s px-6 py-10" id="s-onb">
   <h2 class="text-3xl font-extrabold">¿Qué te gusta?</h2>
   <p class="mt-2" style="color:var(--mut)">Elige varias. Tu feed se arma con esto.</p>
@@ -49,19 +52,19 @@
   <p class="text-center text-xs mt-3" style="color:var(--mut)">Puedes cambiarlo cuando quieras</p></div>
 </section>
 
-<!-- 3 FEED -->
+<!-- FEED -->
 <section class="s" id="s-feed">
   <div class="flex items-center px-4 pt-3 pb-2 gap-3">
     <h1 class="text-2xl font-extrabold flex-1" style="color:var(--p)">Gelxit</h1>
-    <button onclick="tema()" class="icon-btn" aria-label="Cambiar tema"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z"/></svg></button>
-    <button onclick="toast('Sin notificaciones nuevas')" class="icon-btn" aria-label="Notificaciones"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"/><path d="M10 21h4"/></svg></button>
+    <button onclick="tema()" class="icon-btn" aria-label="Cambiar tema"><svg class="ico"><use href="#i-m"/></svg></button>
+    <button class="icon-btn" aria-label="Notificaciones"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"/><path d="M10 21h4"/></svg></button>
     <button onclick="go('inbox')" class="icon-btn" aria-label="Mensajes"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 8.7 8.7 0 0 1-4-.9L4 20l1.3-3.2A7.2 7.2 0 0 1 4 11.5 7.5 7.5 0 0 1 12 4a7.5 7.5 0 0 1 8 7.5Z"/></svg></button>
   </div>
   <div id="stories" class="hs pb-2 items-start"></div>
   <div id="chips" class="hs pb-2"></div>
   <div id="xban" class="hidden mx-4 mb-2 text-sm font-bold rounded-xl px-3 py-2" style="background:var(--card);border:1px solid var(--bd)"><span class="xd"></span> Pegando ahorita mismo</div>
   <div class="feed" id="feed"></div>
-  <button id="xbtn" onclick="xitMode()" class="absolute right-4 flex flex-col items-center justify-center rounded-full text-white font-extrabold text-sm shadow-xl z-10" style="bottom:130px;width:58px;height:58px;background:var(--p);box-shadow:0 6px 20px #7C3AEDaa"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2c.4 4-2.5 5.2-2.5 8.2 0 1.2.6 2.1 1.5 2.8-.1-2.1 1.2-3.8 3-4.7 1.4 1.5 2.2 3.4 2.2 5.5a5.7 5.7 0 0 1-11.4 0C5.8 8.8 11.1 7.5 13 2Z"/></svg>Xit</button>
+  <button id="xbtn" onclick="xitMode()" class="absolute right-4 flex flex-col items-center justify-center rounded-full text-white font-extrabold text-sm shadow-xl z-10" style="bottom:130px;width:58px;height:58px;background:var(--p);box-shadow:0 6px 20px #7C3AEDaa"><svg class="ico"><use href="#i-x"/></svg>Xit</button>
 </section>
 
 <!-- BUSCAR -->
@@ -80,17 +83,17 @@
   <button class="btn mt-auto" onclick="publicar()">Publicar</button>
 </section>
 
-<!-- INBOX / CHATS -->
+<!-- MENSAJES -->
 <section class="s pn" id="s-inbox">
   <div class="flex items-center px-4 pt-4 pb-2"><h2 class="text-2xl font-extrabold flex-1">Mensajes</h2><button class="pill" onclick="newChat()">+ Nuevo</button></div>
   <div id="chatlist" class="overflow-y-auto"></div>
 </section>
 <section class="s" id="s-chat">
   <div class="flex items-center gap-2 px-3 py-2" style="border-bottom:1px solid var(--bd)">
-    <button onclick="go('inbox')" class="text-2xl">←</button>
+    <button onclick="go('inbox')" class="text-2xl" aria-label="Volver">←</button>
     <div id="chh" class="flex-1 font-bold truncate"></div>
     <button class="pill" style="color:#ff6b6b" onclick="bloq()"><svg class="ico" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M5 5l14 14"/></svg> Bloquear</button>
-    <button class="pill" onclick="toast('Reporte enviado. Gracias')"><span class="xd"></span> Reportar</button>
+    <button class="pill" onclick="reportar()"><span class="xd"></span> Reportar</button>
   </div>
   <div id="msgs" class="flex-1 overflow-y-auto p-3 flex flex-col gap-2"></div>
   <div id="blk" class="hidden text-center text-sm p-3" style="color:var(--mut)">Bloqueaste este chat.</div>
@@ -101,11 +104,24 @@
   </div>
 </section>
 
+<!-- AJUSTES -->
+<section class="s px-5 py-6 gap-3" id="s-settings"><div class="flex items-center"><button onclick="go('profile')" class="icon-btn mr-3" aria-label="Volver"><svg class="ico"><use href="#i-b"/></svg></button><h2 class="text-2xl font-extrabold">Configuración</h2></div><p class="text-sm" style="color:var(--mut)">Controla tu experiencia en Gelxit.</p><div class="card overflow-hidden mt-3">
+<button class="settings-row" onclick="go('settings-account')"><span>Cuenta</span><svg class="ico"><use href="#i-f"/></svg></button>
+<button class="settings-row" onclick="go('settings-privacy')"><span>Privacidad</span><svg class="ico"><use href="#i-f"/></svg></button>
+<button class="settings-row" onclick="go('settings-security')"><span>Seguridad</span><svg class="ico"><use href="#i-f"/></svg></button>
+<button class="settings-row" onclick="go('settings-notifications')"><span>Notificaciones</span><svg class="ico"><use href="#i-f"/></svg></button>
+<button class="settings-row" onclick="go('settings-personalization')"><span>Personalización</span><svg class="ico"><use href="#i-f"/></svg></button>
+<button class="settings-row" onclick="go('settings-profile')"><span>Gestión del perfil</span><svg class="ico"><use href="#i-f"/></svg></button></div></section>
+<section class="s px-5 py-6 gap-3" id="s-settings-account"><div class="flex items-center"><button onclick="go('settings')" class="icon-btn mr-3" aria-label="Volver"><svg class="ico"><use href="#i-b"/></svg></button><h2 class="text-2xl font-extrabold">Cuenta</h2></div><div class="card p-5 mt-3"><p class="text-sm" style="color:var(--mut)">Administra los datos básicos de tu cuenta.</p><div class="settings-placeholder">Cargando…</div></div></section>
+<section class="s px-5 py-6 gap-3" id="s-settings-privacy"><div class="flex items-center"><button onclick="go('settings')" class="icon-btn mr-3" aria-label="Volver"><svg class="ico"><use href="#i-b"/></svg></button><h2 class="text-2xl font-extrabold">Privacidad</h2></div><div class="card p-5 mt-3"><p class="text-sm" style="color:var(--mut)">Define cómo se comparte tu contenido y quién puede encontrarte.</p><div class="settings-placeholder">Cargando…</div></div></section>
+<section class="s px-5 py-6 gap-3" id="s-settings-security"><div class="flex items-center"><button onclick="go('settings')" class="icon-btn mr-3" aria-label="Volver"><svg class="ico"><use href="#i-b"/></svg></button><h2 class="text-2xl font-extrabold">Seguridad</h2></div><div class="card p-5 mt-3"><p class="text-sm" style="color:var(--mut)">Revisa el acceso y protege tu cuenta.</p><div class="settings-placeholder">Cargando…</div></div></section>
+<section class="s px-5 py-6 gap-3" id="s-settings-notifications"><div class="flex items-center"><button onclick="go('settings')" class="icon-btn mr-3" aria-label="Volver"><svg class="ico"><use href="#i-b"/></svg></button><h2 class="text-2xl font-extrabold">Notificaciones</h2></div><div class="card p-5 mt-3"><p class="text-sm" style="color:var(--mut)">Configura los avisos que quieres recibir.</p><div class="settings-placeholder">Cargando…</div></div></section>
+<section class="s px-5 py-6 gap-3" id="s-settings-personalization"><div class="flex items-center"><button onclick="go('settings')" class="icon-btn mr-3" aria-label="Volver"><svg class="ico"><use href="#i-b"/></svg></button><h2 class="text-2xl font-extrabold">Personalización</h2></div><div class="card p-5 mt-3"><p class="text-sm" style="color:var(--mut)">Ajusta la apariencia y la experiencia de Gelxit.</p><div class="settings-placeholder">Cargando…</div></div></section>
+<section class="s px-5 py-6 gap-3" id="s-settings-profile"><div class="flex items-center"><button onclick="go('settings')" class="icon-btn mr-3" aria-label="Volver"><svg class="ico"><use href="#i-b"/></svg></button><h2 class="text-2xl font-extrabold">Gestión del perfil</h2></div><div class="card p-5 mt-3"><p class="text-sm" style="color:var(--mut)">Edita tu información pública.</p><div class="settings-placeholder">Cargando…</div></div></section>
 
-<section class="s px-5 py-6 gap-3" id="s-settings"><div class="flex items-center"><button onclick="go('profile')" class="icon-btn mr-3" aria-label="Volver"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h2 class="text-2xl font-extrabold">Configuración</h2></div><p class="text-sm" style="color:var(--mut)">Controla tu experiencia en Gelxit.</p><div class="card overflow-hidden mt-3"><button class="settings-row" onclick="go('settings-account')"><span>Cuenta</span><svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><button class="settings-row" onclick="go('settings-privacy')"><span>Privacidad</span><svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><button class="settings-row" onclick="go('settings-security')"><span>Seguridad</span><svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><button class="settings-row" onclick="go('settings-notifications')"><span>Notificaciones</span><svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><button class="settings-row" onclick="go('settings-personalization')"><span>Personalización</span><svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><button class="settings-row" onclick="go('settings-profile')"><span>Gestión del perfil</span><svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div></section>
-<section class="s px-5 py-6 gap-3" id="s-settings-account"><div class="flex items-center"><button onclick="go('settings')" class="icon-btn mr-3" aria-label="Volver"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h2 class="text-2xl font-extrabold">Cuenta</h2></div><div class="card p-5 mt-3"><p class="text-sm" style="color:var(--mut)">Administra los datos básicos asociados a tu cuenta.</p><div class="settings-placeholder">Esta sección está lista para conectar sus controles reales.</div></div></section><section class="s px-5 py-6 gap-3" id="s-settings-privacy"><div class="flex items-center"><button onclick="go('settings')" class="icon-btn mr-3" aria-label="Volver"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h2 class="text-2xl font-extrabold">Privacidad</h2></div><div class="card p-5 mt-3"><p class="text-sm" style="color:var(--mut)">Define cómo se comparte tu contenido y quién puede encontrarte.</p><div class="settings-placeholder">Esta sección está lista para conectar sus controles reales.</div></div></section><section class="s px-5 py-6 gap-3" id="s-settings-security"><div class="flex items-center"><button onclick="go('settings')" class="icon-btn mr-3" aria-label="Volver"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h2 class="text-2xl font-extrabold">Seguridad</h2></div><div class="card p-5 mt-3"><p class="text-sm" style="color:var(--mut)">Revisa el acceso y protege tu cuenta.</p><div class="settings-placeholder">Esta sección está lista para conectar sus controles reales.</div></div></section><section class="s px-5 py-6 gap-3" id="s-settings-notifications"><div class="flex items-center"><button onclick="go('settings')" class="icon-btn mr-3" aria-label="Volver"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h2 class="text-2xl font-extrabold">Notificaciones</h2></div><div class="card p-5 mt-3"><p class="text-sm" style="color:var(--mut)">Configura los avisos que quieres recibir.</p><div class="settings-placeholder">Esta sección está lista para conectar sus controles reales.</div></div></section><section class="s px-5 py-6 gap-3" id="s-settings-personalization"><div class="flex items-center"><button onclick="go('settings')" class="icon-btn mr-3" aria-label="Volver"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h2 class="text-2xl font-extrabold">Personalización</h2></div><div class="card p-5 mt-3"><p class="text-sm" style="color:var(--mut)">Ajusta la apariencia y la experiencia de Gelxit.</p><div class="settings-placeholder">Esta sección está lista para conectar sus controles reales.</div></div></section><section class="s px-5 py-6 gap-3" id="s-settings-profile"><div class="flex items-center"><button onclick="go('settings')" class="icon-btn mr-3" aria-label="Volver"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h2 class="text-2xl font-extrabold">Gestión del perfil</h2></div><div class="card p-5 mt-3"><p class="text-sm" style="color:var(--mut)">Edita tu información pública y la identidad de tu perfil.</p><div class="settings-placeholder">Esta sección está lista para conectar sus controles reales.</div></div></section><!-- CÍRCULOS -->
+<!-- CÍRCULOS -->
 <section class="s px-5 py-6 gap-3" id="s-circ">
-  <div class="flex items-center"><button onclick="go('profile')" class="text-2xl mr-3">←</button><h2 class="text-2xl font-extrabold">Mis Círculos</h2></div>
+  <div class="flex items-center"><button onclick="go('profile')" class="text-2xl mr-3" aria-label="Volver">←</button><h2 class="text-2xl font-extrabold">Mis Círculos</h2></div>
   <p class="text-sm" style="color:var(--mut)">Tú decides quién ve cada video.</p>
   <div id="circList" class="flex flex-col gap-3"></div>
   <button class="btn2 mt-2" onclick="newCirc()">+ Nuevo círculo</button>
@@ -113,34 +129,35 @@
 
 <!-- PERFIL -->
 <section class="s pn overflow-y-auto" id="s-profile">
-  <div id="bn" class="relative flex-none" style="height:130px;background:var(--card)"><div class="absolute right-0 top-0 flex gap-4 p-4 text-xl" style="text-shadow:0 1px 4px #000a"><button onclick="tema()" class="icon-btn" aria-label="Cambiar tema"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button><button onclick="logout()" class="icon-btn" aria-label="Cerrar sesión"><svg class="ico" viewBox="0 0 24 24"><path d="M10 5H5v14h5M14 8l4 4-4 4M9 12h9"/></svg></button></div></div>
+  <div id="bn" class="relative flex-none" style="height:130px;background:var(--card)"><div class="absolute right-0 top-0 flex gap-4 p-4 text-xl" style="text-shadow:0 1px 4px #000a"><button onclick="tema()" class="icon-btn" aria-label="Cambiar tema"><svg class="ico"><use href="#i-m"/></svg></button><button onclick="logout()" class="icon-btn" aria-label="Cerrar sesión"><svg class="ico" viewBox="0 0 24 24"><path d="M10 5H5v14h5M14 8l4 4-4 4M9 12h9"/></svg></button></div></div>
   <div class="flex flex-col items-center px-6 text-center" style="margin-top:-48px">
     <label id="av" class="w-24 h-24 rounded-full flex items-center justify-center text-4xl font-extrabold text-white overflow-hidden cursor-pointer flex-none" style="border:4px solid var(--bg);background:linear-gradient(135deg,#6a00f4,#c026d3)"><input type="file" accept="image/*" class="hidden" onchange="upAvatar(this)"><span id="avi">Á</span></label>
     <h2 class="mt-3 text-xl font-extrabold flex items-center gap-1"><span id="pn">Ángel</span> <span id="vb"></span></h2>
     <div id="pu" class="text-sm" style="color:var(--mut)">@angel</div>
     <p id="pb" class="mt-2 text-sm">Donde todo pega</p>
     <div class="flex gap-8 mt-4 text-center"><div><b id="ps">0</b><div class="text-xs" style="color:var(--mut)">Seguidores</div></div><div><b id="pg">0</b><div class="text-xs" style="color:var(--mut)">Siguiendo</div></div><div><b id="pv">0</b><div class="text-xs" style="color:var(--mut)">Xits</div></div></div>
-    <div class="mt-3 text-sm font-bold"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2c.4 4-2.5 5.2-2.5 8.2 0 1.2.6 2.1 1.5 2.8-.1-2.1 1.2-3.8 3-4.7 1.4 1.5 2.2 3.4 2.2 5.5a5.7 5.7 0 0 1-11.4 0C5.8 8.8 11.1 7.5 13 2Z"/></svg> <span id="px">0</span> <span style="color:var(--mut);font-weight:600">Xits totales</span></div>
+    <div class="mt-3 text-sm font-bold"><svg class="ico"><use href="#i-x"/></svg> <span id="px">0</span> <span style="color:var(--mut);font-weight:600">Xits totales</span></div>
     <div class="flex flex-col gap-2 mt-4 w-full"><button class="btn" onclick="go('edit')">Editar perfil</button><div class="flex items-center justify-center gap-2"><button class="pill" onclick="go('circ')">Círculos</button><button class="pill" onclick="shareP()">Compartir</button><button class="pill" onclick="go('settings')"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3.5v2M12 18.5v2M3.5 12h2M18.5 12h2M6 6l1.4 1.4m9.2 9.2L18 18M6 18l1.4-1.4m9.2-9.2L18 6"/><circle cx="12" cy="12" r="4.2"/></svg> Configuración</button></div></div><div id="adm" class="w-full"></div>
   </div>
   <div class="card m-4 p-4"><b>Verificación</b>
     <div class="mt-3 flex flex-col gap-3 text-sm">
-      <div class="flex items-center gap-3"><span id="b1"></span><div class="flex-1"><b>Por Identidad</b><div style="color:var(--mut)">Puedes verificarte con INE, credencial de escuela o selfie</div></div><button id="v1" class="pill" onclick="toast('Escríbele a @angelxit por Inbox con tu INE, credencial o selfie')">Pronto</button></div>
+      <div class="flex items-center gap-3"><span id="b1"></span><div class="flex-1"><b>Por Identidad</b><div style="color:var(--mut)">Estamos preparando un proceso seguro de verificación.</div></div><button id="v1" class="pill">Pronto</button></div>
       <div class="flex items-center gap-3"><span id="b2"></span><div class="flex-1"><b>Premium</b><div style="color:var(--mut)">De pago · aún sin cobro</div></div><button id="v2" class="pill" onclick="toast('Disponible pronto')">Pronto</button></div>
     </div></div>
   <p class="px-4 pb-2 text-xs" style="color:var(--mut)">Fija hasta 3 Xits arriba</p>
   <div id="grid" class="grid grid-cols-3 gap-1 px-1"></div>
 </section>
 
-<section class="s px-4 py-5 gap-3" id="s-admin"><div class="flex items-center"><button onclick="go('profile')" class="text-2xl mr-3">←</button><h2 class="text-2xl font-extrabold">Panel de Dueño</h2></div><input id="aq" placeholder="Buscar @usuario" autocapitalize="none" oninput="clearTimeout(window._t);window._t=setTimeout(adminList,300)"><div id="alist" class="flex flex-col gap-3 overflow-y-auto pb-6 flex-1"></div></section>
-<section class="s overflow-y-auto" id="s-edit"><div class="flex items-center px-4 pt-4 pb-3"><button onclick="go('profile')" class="text-2xl mr-3">←</button><h2 class="text-2xl font-extrabold">Editar perfil</h2></div>
+<section class="s px-4 py-5 gap-3" id="s-admin"><div class="flex items-center"><button onclick="go('profile')" class="text-2xl mr-3" aria-label="Volver">←</button><h2 class="text-2xl font-extrabold">Panel de Dueño</h2></div><input id="aq" placeholder="Buscar @usuario" autocapitalize="none" oninput="clearTimeout(window._t);window._t=setTimeout(adminList,300)"><div id="alist" class="flex flex-col gap-3 overflow-y-auto pb-6 flex-1"></div></section>
+<section class="s overflow-y-auto" id="s-edit"><div class="flex items-center px-4 pt-4 pb-3"><button onclick="go('profile')" class="text-2xl mr-3" aria-label="Volver">←</button><h2 class="text-2xl font-extrabold">Editar perfil</h2></div>
 <label class="block relative cursor-pointer flex-none"><input id="ebf" type="file" accept="image/*" class="hidden" onchange="prevImg(this,'bn2')"><div id="bn2" style="height:130px;background:var(--card)"></div><span class="absolute right-3 bottom-2 pill"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3"/></svg> Banner</span></label>
 <label class="flex justify-center cursor-pointer flex-none" style="margin-top:-44px"><input id="eaf" type="file" accept="image/*" class="hidden" onchange="prevImg(this,'av2')"><div id="av2" class="w-24 h-24 rounded-full flex items-center justify-center text-3xl text-white font-bold" style="border:4px solid var(--bg);background:linear-gradient(135deg,#6a00f4,#c026d3)"><svg class="ico ico-xl" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3"/></svg></div></label>
 <div class="px-6 py-4 flex flex-col gap-3 flex-none"><input id="enm" placeholder="Nombre"><input id="eus" placeholder="Usuario (@)" autocapitalize="none"><input id="ebi" placeholder="Bio" maxlength="150"><button class="btn mt-2" onclick="saveEdit()">Guardar</button></div></section>
 <section class="s items-center justify-center text-center px-8 gap-4" id="s-ban"><svg class="ico ico-xl" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 19 6v5c0 4.5-2.8 8-7 10-4.2-2-7-5.5-7-10V6z"/><path d="m9 12 2 2 4-4"/></svg><h2 class="text-2xl font-extrabold">Tu cuenta fue suspendida</h2><p style="color:var(--mut)">Si crees que fue un error, contacta a @angelxit.</p><button class="btn" onclick="go('home')">Volver</button></section>
+
 <input id="sf" type="file" accept="image/*,video/*" class="hidden" onchange="upHist(this)">
-<div id="sv" class="absolute inset-0 z-[60] flex-col text-white" style="display:none;background:#000"><div id="svm" class="absolute inset-0"></div><div class="absolute inset-y-20 left-0 w-1/3" onclick="prevS()"></div><div class="absolute inset-y-20 right-0 w-2/3" onclick="nextS()"></div><div class="relative z-10 flex items-center gap-2 p-4" style="background:linear-gradient(#000a,transparent)"><div id="svh" class="flex-1 flex items-center gap-2"></div><button class="text-2xl" onclick="closeS()"><svg class="ico" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="flex-1"></div><div id="svb" class="relative z-10 flex items-center gap-2 p-4" style="background:linear-gradient(transparent,#000a)"></div></div>
-<div id="plus" class="hidden absolute inset-0 z-40 flex items-end" style="background:#000a" onclick="if(event.target===this)this.classList.add('hidden')"><div class="w-full rounded-t-3xl p-5 pb-8 flex flex-col gap-2" style="background:var(--bg)"><b class="text-lg mb-1">Crear</b><button class="card p-4 text-left font-bold" onclick="pm('xit')"><svg class="ico" viewBox="0 0 24 24"><path d="M13 2c.4 4-2.5 5.2-2.5 8.2 0 1.2.6 2.1 1.5 2.8-.1-2.1 1.2-3.8 3-4.7 1.4 1.5 2.2 3.4 2.2 5.5a5.7 5.7 0 0 1-11.4 0C5.8 8.8 11.1 7.5 13 2Z"/></svg> Hacer Xit</button><button class="card p-4 text-left font-bold" onclick="pm('hist')"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3 14 9l6 1-6 2-2 6-2-6-6-2 6-1z"/></svg> Subir Historia</button><button class="card p-4 text-left font-bold" onclick="pm('vid')"><svg class="ico" viewBox="0 0 24 24"><path d="m9 6 9 6-9 6z"/></svg> Subir Xit</button></div></div>
+<div id="sv" class="absolute inset-0 z-[60] flex-col text-white" style="display:none;background:#000"><div id="svm" class="absolute inset-0"></div><div class="absolute inset-y-20 left-0 w-1/3" onclick="prevS()"></div><div class="absolute inset-y-20 right-0 w-2/3" onclick="nextS()"></div><div class="relative z-10 flex items-center gap-2 p-4" style="background:linear-gradient(#000a,transparent)"><div id="svh" class="flex-1 flex items-center gap-2"></div><button class="text-2xl" onclick="closeS()" aria-label="Cerrar"><svg class="ico" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="flex-1"></div><div id="svb" class="relative z-10 flex items-center gap-2 p-4" style="background:linear-gradient(transparent,#000a)"></div></div>
+<div id="plus" class="hidden absolute inset-0 z-40 flex items-end" style="background:#000a" onclick="if(event.target===this)this.classList.add('hidden')"><div class="w-full rounded-t-3xl p-5 pb-8 flex flex-col gap-2" style="background:var(--bg)"><b class="text-lg mb-1">Crear</b><button class="card p-4 text-left font-bold" onclick="pm('xit')"><svg class="ico"><use href="#i-x"/></svg> Hacer Xit</button><button class="card p-4 text-left font-bold" onclick="pm('hist')"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3 14 9l6 1-6 2-2 6-2-6-6-2 6-1z"/></svg> Subir Historia</button><button class="card p-4 text-left font-bold" onclick="pm('vid')"><svg class="ico" viewBox="0 0 24 24"><path d="m9 6 9 6-9 6z"/></svg> Subir Xit</button></div></div>
 <div id="sheet" class="hidden absolute inset-0 z-[70] flex items-end" style="background:#000a" onclick="if(event.target===this)this.classList.add('hidden')"><div id="sheetc" class="w-full rounded-t-3xl overflow-hidden" style="background:var(--bg)"></div></div>
 <nav id="nav">
   <button data-g="feed" onclick="go('feed')"><svg class="ico" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</button>
@@ -154,5 +171,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="app.js"></script>
+<script src="gelxit-patch.js"></script>
 </body>
 </html>
