@@ -19,3 +19,11 @@
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(self), microphone=(self), geolocation=(), payment=()
+/gelxit-design.css
+  Cache-Control: no-cache
+/gelxit-viewer.css
+  Cache-Control: no-cache
+/gelxit-viewer.js
+  Cache-Control: no-cache
+/gelxit-patch.js
+  Cache-Control: no-cache
