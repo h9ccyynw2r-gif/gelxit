@@ -27,3 +27,7 @@
   Cache-Control: no-cache
 /gelxit-patch.js
   Cache-Control: no-cache
+/gelxit-motion.css
+  Cache-Control: no-cache
+/gelxit-motion.js
+  Cache-Control: no-cache
