@@ -26,14 +26,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <link rel="icon" href="gelxit-logo.jpg">
-<link rel="stylesheet" href="app.css?v=20261112h">
-<link rel="stylesheet" href="gelxit-fixes.css?v=20261112h">
-<link rel="stylesheet" href="gelxit-design.css?v=20261112h">
-<link rel="stylesheet" href="gelxit-viewer.css?v=20261112h">
-<link rel="stylesheet" href="gelxit-motion.css?v=20261112h">
-<link rel="stylesheet" href="gelxit-panel.css?v=20261112h">
-<link rel="stylesheet" href="gelxit-chat.css?v=20261112h">
-<link rel="stylesheet" href="gelxit-social.css?v=20261112h">
+<link rel="stylesheet" href="app.css?v=20261112k">
+<link rel="stylesheet" href="gelxit-fixes.css?v=20261112k">
+<link rel="stylesheet" href="gelxit-design.css?v=20261112k">
+<link rel="stylesheet" href="gelxit-viewer.css?v=20261112k">
+<link rel="stylesheet" href="gelxit-motion.css?v=20261112k">
+<link rel="stylesheet" href="gelxit-panel.css?v=20261112k">
+<link rel="stylesheet" href="gelxit-chat.css?v=20261112k">
+<link rel="stylesheet" href="gelxit-social.css?v=20261112k">
+<link rel="stylesheet" href="gelxit-auth.css?v=20261112k">
 </head>
 <body>
 <div id="gxsplash" aria-hidden="true"><div class="l"><span class="r"></span><span class="r r2"></span><img src="gelxit-logo.jpg" alt=""></div></div>
@@ -46,24 +47,36 @@
 <div id="app">
 
 <!-- INICIO -->
-<section class="s items-center justify-between text-center px-8 py-10" id="s-home" style="background:radial-gradient(circle at 50% 25%,#7C3AED44,transparent 60%),var(--bg)">
+<section class="s gx-auth gx-welcome" id="s-home">
   <button onclick="tema()" class="icon-btn self-end" aria-label="Cambiar tema"><svg class="ico"><use href="#i-m"/></svg></button>
-  <div class="flex flex-col items-center gap-5">
-    <img src="gelxit-logo.jpg" alt="Logo Gelxit" class="w-56 h-56 rounded-[44px] shadow-2xl" style="box-shadow:0 20px 60px #7C3AE766">
-    <h1 class="text-4xl font-extrabold tracking-tight">Gelxit</h1>
+  <div class="gx-hero">
+    <img src="gelxit-logo.jpg" alt="Logo Gelxit" class="gx-logo">
+    <h1 class="gx-word">Gelxit</h1>
+    <p class="gx-tag">Donde todo pega. Videos, historias y chats con tu gente.</p>
   </div>
-  <div class="w-full flex flex-col gap-3">
+  <div class="gx-bottom">
     <button class="btn" onclick="go('reg')">Crear cuenta</button>
     <button class="btn2" onclick="go('login')">Entrar</button>
-    <p class="mt-4 text-sm" style="color:var(--mut)">Gelxit – Donde todo pega.</p>
   </div>
 </section>
 
-<section class="s px-6 py-10 gap-3" id="s-reg"><button onclick="go('home')" class="icon-btn self-start" aria-label="Volver"><svg class="ico"><use href="#i-b"/></svg></button><h2 class="text-3xl font-extrabold">Crear cuenta</h2><p class="text-sm mb-2" style="color:var(--mut)">Solo con correo y contraseña.</p>
-<input id="rn" placeholder="Nombre"><input id="ru" placeholder="Usuario (sin @)" autocapitalize="none" autocomplete="username"><input id="re" type="email" placeholder="Correo" autocomplete="email"><input id="rp" type="password" placeholder="Contraseña (mín. 8)" autocomplete="new-password"><button class="btn mt-3" onclick="registro()">Crear cuenta</button><button class="text-sm" style="color:var(--p)" onclick="go('login')">Ya tengo cuenta</button></section>
-<section class="s px-6 py-10 gap-3" id="s-login"><button onclick="go('home')" class="icon-btn self-start" aria-label="Volver"><svg class="ico"><use href="#i-b"/></svg></button><h2 class="text-3xl font-extrabold">Entrar</h2><p class="text-sm mb-2" style="color:var(--mut)">Qué bueno verte de nuevo</p>
-<input id="le" type="email" placeholder="Correo" autocomplete="email"><input id="lp" type="password" placeholder="Contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"><button class="btn mt-3" onclick="login()">Entrar</button><button class="text-sm" style="color:var(--p)" onclick="go('recover')">¿Olvidaste tu contraseña? Recupérala aquí</button><button class="text-sm" style="color:var(--mut)" onclick="go('reg')">Crear cuenta</button></section>
-<section class="s px-6 py-10 gap-3" id="s-recover"><button onclick="go('login')" class="icon-btn self-start" aria-label="Volver"><svg class="ico"><use href="#i-b"/></svg></button><h2 class="text-3xl font-extrabold">Recuperar acceso</h2><p class="text-sm mb-2" style="color:var(--mut)">Escribe tu correo y te enviaremos un enlace seguro.</p><input id="recoverEmail" type="email" placeholder="Correo" autocomplete="email"><button class="btn mt-3" onclick="recoverPassword()">Enviar enlace</button></section>
+<section class="s gx-auth" id="s-reg"><button onclick="go('home')" class="gx-back" aria-label="Volver"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+  <div class="gx-head"><h2>Crea tu cuenta</h2><p>Solo con correo y contraseña</p></div>
+  <div class="gx-form"><label class="gx-f"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.6"/><path d="M5 20c.7-3.6 3.6-5.4 7-5.4s6.3 1.8 7 5.4"/></svg><input id="rn" type="text" placeholder="Nombre" autocomplete="name"></label><label class="gx-f"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.6"/><path d="M15.6 8.6v4.2c0 1.5 1.1 2.5 2.4 2.5 1.5 0 2.6-1.4 2.6-3.3A8.6 8.6 0 1 0 12 20.6c1.6 0 3.1-.4 4.4-1.2"/></svg><input id="ru" type="text" placeholder="Usuario (sin @)" autocapitalize="none" autocomplete="username"></label><label class="gx-f"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 8 8 5.5L20 8"/></svg><input id="re" type="email" placeholder="Correo" autocomplete="email"></label><label class="gx-f"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="9.5" rx="3"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg><input id="rp" type="password" placeholder="Contraseña (mín. 8)" autocomplete="new-password"><button type="button" class="gx-eye" data-for="rp">Mostrar</button></label>
+    <div class="gx-meter" id="gxmeter" aria-live="polite"><i></i><i></i><i></i><i></i></div><small class="gx-mtxt" id="gxmtxt"></small></div>
+  <div class="gx-bottom"><button class="btn" onclick="registro()">Crear cuenta</button><p class="gx-alt">¿Ya tienes cuenta? <button onclick="go('login')">Entrar</button></p></div>
+</section>
+<section class="s gx-auth" id="s-login"><button onclick="go('home')" class="gx-back" aria-label="Volver"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+  <div class="gx-head"><img class="gx-mini" src="gelxit-logo.jpg" alt="Gelxit"><h2>Qué bueno verte de nuevo</h2><p>Entra con tu correo y contraseña</p></div>
+  <div class="gx-form"><label class="gx-f"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 8 8 5.5L20 8"/></svg><input id="le" type="email" placeholder="Correo" autocomplete="email"></label><label class="gx-f"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="9.5" rx="3"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg><input id="lp" type="password" placeholder="Contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"><button type="button" class="gx-eye" data-for="lp">Mostrar</button></label>
+    <button class="gx-forgot" onclick="go('recover')">¿Olvidaste tu contraseña?</button></div>
+  <div class="gx-bottom"><button class="btn" onclick="login()">Entrar</button><p class="gx-alt">¿No tienes cuenta? <button onclick="go('reg')">Crear cuenta</button></p></div>
+</section>
+<section class="s gx-auth" id="s-recover"><button onclick="go('login')" class="gx-back" aria-label="Volver"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+  <div class="gx-head"><img class="gx-mini" src="gelxit-logo.jpg" alt="Gelxit"><h2>Recuperar acceso</h2><p>Escribe tu correo y te enviaremos un enlace seguro</p></div>
+  <div class="gx-form"><label class="gx-f"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 8 8 5.5L20 8"/></svg><input id="recoverEmail" type="email" placeholder="Correo" autocomplete="email"></label></div>
+  <div class="gx-bottom"><button class="btn" onclick="recoverPassword()">Enviar enlace</button></div>
+</section>
 <section class="s px-6 py-10 gap-3" id="s-reset"><h2 class="text-3xl font-extrabold">Nueva contraseña</h2><p class="text-sm mb-2" style="color:var(--mut)">Crea una contraseña nueva para volver a Gelxit.</p><input id="newPassword" type="password" placeholder="Nueva contraseña (mín. 8)" autocomplete="new-password"><input id="newPasswordConfirm" type="password" placeholder="Repite la contraseña" autocomplete="new-password"><button class="btn mt-3" onclick="updatePassword()">Guardar contraseña</button></section>
 
 <!-- ONBOARDING -->
@@ -196,12 +209,13 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="app.js?v=20261112h"></script>
-<script src="gelxit-patch.js?v=20261112h"></script>
-<script src="gelxit-viewer.js?v=20261112h"></script>
-<script src="gelxit-motion.js?v=20261112h"></script>
-<script src="gelxit-panel.js?v=20261112h"></script>
-<script src="gelxit-chat.js?v=20261112h"></script>
-<script src="gelxit-social.js?v=20261112h"></script>
+<script src="app.js?v=20261112k"></script>
+<script src="gelxit-patch.js?v=20261112k"></script>
+<script src="gelxit-viewer.js?v=20261112k"></script>
+<script src="gelxit-motion.js?v=20261112k"></script>
+<script src="gelxit-panel.js?v=20261112k"></script>
+<script src="gelxit-chat.js?v=20261112k"></script>
+<script src="gelxit-social.js?v=20261112k"></script>
+<script src="gelxit-auth.js?v=20261112k"></script>
 </body>
 </html>

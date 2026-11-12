@@ -691,7 +691,7 @@ document.addEventListener('change',async e=>{
 (function init(){
   try{const t=localStorage.getItem('gx-theme');if(t)document.documentElement.dataset.theme=t}catch{}
   $$('input:not([type=file]):not([type=checkbox])').forEach(i=>{if(!i.getAttribute('aria-label')&&i.placeholder)i.setAttribute('aria-label',i.placeholder);if(i.placeholder)i.placeholder=i.placeholder.replace('mín. 6',`mín. ${MINPASS}`)});
-  $$('input[type=password]').forEach(i=>{const b=document.createElement('button');b.type='button';b.className='text-sm self-start';b.style.color='var(--mut)';b.textContent='Mostrar contraseña';b.setAttribute('aria-pressed','false');b.onclick=()=>{const s=i.type==='password';i.type=s?'text':'password';b.textContent=s?'Ocultar contraseña':'Mostrar contraseña';b.setAttribute('aria-pressed',String(s))};i.after(b)});
+  $$('input[type=password]').filter(i=>!i.closest('.gx-f')).forEach(i=>{const b=document.createElement('button');b.type='button';b.className='text-sm self-start';b.style.color='var(--mut)';b.textContent='Mostrar contraseña';b.setAttribute('aria-pressed','false');b.onclick=()=>{const s=i.type==='password';i.type=s?'text':'password';b.textContent=s?'Ocultar contraseña':'Mostrar contraseña';b.setAttribute('aria-pressed',String(s))};i.after(b)});
   $('#nav button:not([data-g])')?.setAttribute('aria-label','Crear');
   $$('#s-chat .pill').forEach(b=>{if(b.textContent.includes('Reportar'))b.onclick=reportar});
   $$('#s-feed button[aria-label="Notificaciones"]').forEach(b=>b.onclick=()=>toast('El centro de notificaciones llegará pronto'));

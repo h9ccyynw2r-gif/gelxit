@@ -7,7 +7,6 @@
 - [ ] Cambiar el Tailwind por CDN a un CSS propio compilado.
 
 ## Producto
-- [ ] Nuevo diseño del login (hay vista previa, falta aprobarla).
 - [ ] Barra de abajo: decidir si se quita Inbox para dejar el + al centro.
 - [ ] Barra de progreso real al subir videos (hoy es indeterminada).
 - [ ] Modo mantenimiento que también cierre la base de datos (hoy solo muestra aviso).
