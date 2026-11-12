@@ -1,4 +1,5 @@
-/* gelxit-social.js — listas de Seguidores y Siguiendo (con "Se siguen") y conteos reales.
+/* gelxit-social.js — listas de Seguidores y Siguiendo (con "Se siguen").
+   Los números mostrados vienen de profiles.seguidores_count / siguiendo_count (editables por el creador).
    Se carga DESPUÉS de app.js. */
 (function(){
 'use strict';
@@ -39,7 +40,8 @@ function decorateOwn(){
   const s=$('#ps'),g=$('#pg');if(!s||!g||!prof)return;
   [[s,'seg'],[g,'sig']].forEach(([el,t])=>{const d=el.parentElement;if(d.dataset.gxf)return;d.dataset.gxf='1';d.style.cursor='pointer';d.setAttribute('role','button');d.tabIndex=0;
     const go=()=>openFollows(prof.id,t);d.addEventListener('click',go);d.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}})});
-  counts(prof.id).then(c=>{if(c.s!==null)s.textContent=fmt(c.s);if(c.g!==null)g.textContent=fmt(c.g)});
+  /* Los números son los de la columna del perfil (el creador puede editarlos en la base de datos). */
+  sb.from('profiles').select('seguidores_count,siguiendo_count').eq('id',prof.id).maybeSingle().then(r=>{if(r.data){s.textContent=fmt(r.data.seguidores_count||0);g.textContent=fmt(r.data.siguiendo_count||0)}});
 }
 const _perfil=perfil;
 perfil=async function(){const r=await _perfil.apply(this,arguments);try{decorateOwn()}catch(_){}return r};
@@ -47,7 +49,8 @@ perfil=async function(){const r=await _perfil.apply(this,arguments);try{decorate
 /* ---- Perfil de otra persona (hoja) ---- */
 async function decorateSheet(id){
   const row=document.querySelector('#sheetc .flex.gap-6.mt-3.text-sm');if(!row)return;
-  const c=await counts(id);
+  const r=await sb.from('profiles').select('seguidores_count,siguiendo_count').eq('id',id).maybeSingle();
+  const c=r.data?{s:r.data.seguidores_count||0,g:r.data.siguiendo_count||0}:await counts(id);
   const old=row.querySelectorAll('b');const xits=old[1]?old[1].textContent:'0';
   const s=c.s!==null?c.s:null;
   row.innerHTML=`<button class="gx-fl-c" data-t="seg"><b>${s===null?(old[0]?old[0].textContent:'0'):fmt(s)}</b> seguidores</button><button class="gx-fl-c" data-t="sig"><b>${c.g===null?'–':fmt(c.g)}</b> siguiendo</button><span><b>${xits}</b> Xits</span>`;
