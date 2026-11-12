@@ -1,0 +1,9 @@
+/* Eliminar chats y mensajes */
+.gx-cd{position:absolute;right:12px;top:50%;margin-top:-18px;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--mut);cursor:pointer;transition:background .15s,color .15s}
+.gx-cd:hover,.gx-cd:focus-visible{background:rgba(255,107,107,.14);color:#ff6b6b}
+.gx-cd svg{width:18px;height:18px}
+#chatlist > button{padding-right:56px}
+#msgs .bub.me[data-mid]{cursor:pointer}
+.gx-cd svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.gx-cd{color:rgba(255,255,255,.55)}
+:root[data-theme="light"] .gx-cd{color:rgba(0,0,0,.5)}
