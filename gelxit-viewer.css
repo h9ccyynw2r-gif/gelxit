@@ -95,3 +95,5 @@
 @keyframes gxsp{0%{transform:scale(.7)}60%{transform:scale(1.35)}100%{transform:scale(1)}}
 .gx-sxc{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:rgba(20,22,24,.62);border:1px solid rgba(255,255,255,.22);font-size:14px}
 .gx-sxc svg{width:18px;height:18px;color:#a0fbfd}
+
+.post-media.pv-on .gx-play{opacity:0}

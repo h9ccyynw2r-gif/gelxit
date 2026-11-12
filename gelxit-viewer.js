@@ -212,5 +212,25 @@ document.addEventListener('click',async e=>{
   };
 })();
 
-/* Feed: los videos no arrancan solos; se ve la miniatura y al tocar abre el visor */
-watchVideos=function(){try{IO&&IO.disconnect();IO=null}catch(_){}document.querySelectorAll('#feed video').forEach(v=>{v.autoplay=false;v.pause()})};
+/* Feed: los videos no arrancan solos. Los que traen miniatura la muestran; los viejos (sin miniatura)
+   se reproducen en silencio ~4 s al aparecer en pantalla y se quedan en ese cuadro. Al tocar abre el visor. */
+let PVIO=null;
+watchVideos=function(){
+  try{IO&&IO.disconnect();IO=null}catch(_){}
+  try{PVIO&&PVIO.disconnect()}catch(_){}
+  const vids=[...document.querySelectorAll('#feed video')];
+  vids.forEach(v=>{v.autoplay=false;v.muted=true;v.setAttribute('playsinline','');v.pause();
+    const box=v.closest('.post-media');
+    if(box&&!v._pvb){v._pvb=1;v.addEventListener('playing',()=>box.classList.add('pv-on'));v.addEventListener('pause',()=>box.classList.remove('pv-on'))}});
+  if(!('IntersectionObserver' in window))return;
+  PVIO=new IntersectionObserver(es=>es.forEach(e=>{
+    const v=e.target;
+    if(e.isIntersecting){
+      if(v.dataset.pv||v.getAttribute('poster'))return;
+      v.dataset.pv='1';
+      const p=v.play();
+      (p&&p.then?p:Promise.resolve()).then(()=>{v._pt=setTimeout(()=>{try{v.pause()}catch(_){}},4000)}).catch(()=>{v.dataset.pv=''});
+    }else{clearTimeout(v._pt);if(!v.paused)v.pause()}
+  }),{threshold:.6});
+  vids.forEach(v=>{if(!v.getAttribute('poster'))PVIO.observe(v)});
+};
