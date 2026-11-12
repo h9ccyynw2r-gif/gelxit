@@ -211,3 +211,6 @@ document.addEventListener('click',async e=>{
     }catch(_){}
   };
 })();
+
+/* Feed: los videos no arrancan solos; se ve la miniatura y al tocar abre el visor */
+watchVideos=function(){try{IO&&IO.disconnect();IO=null}catch(_){}document.querySelectorAll('#feed video').forEach(v=>{v.autoplay=false;v.pause()})};

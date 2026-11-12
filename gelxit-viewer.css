@@ -87,7 +87,6 @@
 .post-media{position:relative}
 .gx-play{position:absolute;left:50%;top:50%;width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(10,12,14,.5);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.28);pointer-events:none;transition:opacity .2s}
 .gx-play svg{width:26px;height:26px;margin-left:3px}
-.post-media:has(video:not([paused])) .gx-play{opacity:0}
 /* Xit en historias */
 .gx-sx{width:46px;height:46px;min-height:46px;border-radius:50%;display:grid;place-items:center;flex:none;color:#fff;background:rgba(20,22,24,.62);border:1px solid rgba(255,255,255,.22);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:transform .15s,background .2s,color .2s}
 .gx-sx svg{width:24px;height:24px}
