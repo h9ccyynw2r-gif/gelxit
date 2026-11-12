@@ -5,6 +5,23 @@
 -- ============================================================
 
 -- 1) REPORTES: estado y fecha, y solo el dueño/admin puede verlos y cerrarlos
+create table if not exists public.reports (
+  id uuid primary key default gen_random_uuid(),
+  reporter_id uuid references auth.users(id) on delete set null,
+  chat_id text,
+  target_user_id uuid references auth.users(id) on delete set null,
+  motivo text not null check (char_length(btrim(motivo)) between 1 and 500),
+  estado text not null default 'abierto',
+  creado_en timestamptz default now(),
+  resuelto_en timestamptz,
+  resuelto_por uuid
+);
+alter table public.reports enable row level security;
+grant insert on public.reports to authenticated;
+drop policy if exists "gx rep crear" on public.reports;
+create policy "gx rep crear" on public.reports for insert to authenticated
+  with check (reporter_id = auth.uid());
+
 alter table public.reports add column if not exists estado text not null default 'abierto';
 alter table public.reports add column if not exists creado_en timestamptz default now();
 alter table public.reports add column if not exists resuelto_en timestamptz;
