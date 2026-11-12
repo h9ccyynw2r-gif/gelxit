@@ -16,7 +16,7 @@ const SCR={},LOCK=new Set();
 const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const U=u=>{try{const x=new URL(u,location.href);return /^https?:$/.test(x.protocol)?x.href:''}catch{return ''}};
 const cssUrl=u=>U(u).replace(/["\\()\s]/g,encodeURIComponent);
-const fmt=n=>{n=+n||0;if(n>=1e9)return (n/1e9).toFixed(n%1e9===0?0:1).replace(/\.0$/,'')+'B';if(n>=1e6)return (n/1e6).toFixed(n%1e6===0?0:1).replace(/\.0$/,'')+'M';if(n>=1e3)return (n/1e3).toFixed(n%1e3===0?0:1).replace(/\.0$/,'')+'K';return String(n)};
+const fmt=n=>{n=Math.max(0,Math.floor(+n||0));if(n<1000)return String(n);const U=[[1e9,'B'],[1e6,'M'],[1e3,'K']];for(let k=0;k<3;k++){const [u,l]=U[k];if(n>=u){let v=n/u;v=v<100?Math.floor(v*10)/10:Math.floor(v);if(v>=1000&&k>0){const [u2,l2]=U[k-1];return (Math.floor(n/u2*10)/10).toString().replace(/\.0$/,'')+l2}return String(v).replace(/\.0$/,'')+l}}return String(n)};
 const ext=f=>(f.name?.split('.').pop()||'bin').toLowerCase().replace(/[^a-z0-9]/g,'');
 const dayAgo=()=>new Date(Date.now()-864e5).toISOString();
 const isBanned=p=>!!p&&p.baneado===true&&(!p.ban_hasta||new Date(p.ban_hasta)>new Date());
