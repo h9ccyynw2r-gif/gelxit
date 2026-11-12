@@ -174,3 +174,13 @@ document.addEventListener('click',async e=>{
   }
 });
 })();
+
+/* Historias: Escape y deslizar hacia abajo cierran la historia */
+(function(){
+  const sv=()=>document.getElementById('sv');
+  const open=()=>{const e=sv();return e&&e.style.display!=='none'};
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&open()&&typeof closeS==='function')closeS()});
+  let y0=null;
+  document.addEventListener('touchstart',e=>{y0=open()&&e.target.closest&&e.target.closest('#sv')?e.touches[0].clientY:null},{passive:true});
+  document.addEventListener('touchend',e=>{if(y0!==null&&open()&&e.changedTouches[0].clientY-y0>120&&typeof closeS==='function')closeS();y0=null},{passive:true});
+})();

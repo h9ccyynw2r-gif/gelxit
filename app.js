@@ -453,7 +453,7 @@ function showS(){
   $('#sv').style.display='flex';
   $('#svm').innerHTML=vid?`<video src="${mu}" autoplay playsinline class="w-full h-full object-contain" onended="nextS()"></video>`:`<img src="${mu}" alt="Historia de @${E(p.username)}" class="w-full h-full object-contain">`;
   $('#svh').innerHTML=`${av(p,36)}<b>@${E(p.username)}</b> ${vbadge(p)}<span class="text-xs opacity-70 ml-auto">${SV.i+1}/${SV.l.length}</span>`;
-  $('#svb').innerHTML=mine?`<button class="pill" onclick="verVistas('${h.id}')">${svg('user')} Quién la vio</button><button class="pill" aria-label="Borrar historia" onclick="borrarHist('${h.id}')">${svg('close')}</button>`:`<input id="svr" aria-label="Responder" placeholder="Responder…" onfocus="clearTimeout(SV.t)" onkeydown="if(event.key==='Enter')respH()"><button class="pill" aria-label="Enviar respuesta" onclick="respH()">${svg('send')}</button>`;
+  $('#svb').innerHTML=mine?`<button class="pill" onclick="verVistas('${h.id}')">${svg('user')} Quién la vio</button><button class="pill" aria-label="Borrar historia" onclick="borrarHist('${h.id}')">Borrar</button>`:`<input id="svr" aria-label="Responder" placeholder="Responder…" onfocus="clearTimeout(SV.t)" onkeydown="if(event.key==='Enter')respH()"><button class="pill" aria-label="Enviar respuesta" onclick="respH()">${svg('send')}</button>`;
   if(!mine)sb.from('historia_vistas').insert({historia_id:h.id,user_id:me.id}).then(()=>{});
   if(!vid)SV.t=setTimeout(nextS,5000);
 }
