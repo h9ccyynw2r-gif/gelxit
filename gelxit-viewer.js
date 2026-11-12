@@ -15,7 +15,9 @@ const ago=t=>{const s=Math.max(1,(Date.now()-new Date(t))/1000|0);if(s<60)return
 const _post=postHTML;
 postHTML=function(p){
   let h=_post(p);
-  h=h.replace(/ controls(?=[ >])/,'');                       // el toque abre el visor en vez de mostrar controles
+  h=h.replace(/ controls(?=[ >])/,'');
+  if(p.video_url){const fu=U(p.foto_url);h=h.replace(/<video src="([^"]+)"/,(m,s)=>`<video src="${s}${s.includes('#')?'':'#t=0.1'}"${fu?` poster="${E(fu)}"`:''}`);
+    h=h.replace('</video></div>','</video><span class="gx-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span></div>')}                       // el toque abre el visor en vez de mostrar controles
   const id=E(p.id);
   const foot=`<footer class="post-a"><button class="act ${p.mine?'liked':''}" aria-pressed="${!!p.mine}" aria-label="Dar Xit" onclick="doXit('${id}',this)">${FLAME}<span>${fmt(p.xc)}</span></button><button class="act" aria-label="Comentarios" onclick="openViewer('${id}',true)">${CMT}<span>Comentar</span></button><button class="act" aria-label="Compartir" onclick="sharePost('${id}')">${SHR}</button></footer>`;
   h=h.replace(/<footer class="post-a">[\s\S]*?<\/footer>/,foot);
@@ -52,7 +54,7 @@ window.openViewer=function(id,withComments){
   const u=p.pr||{},vu=U(p.video_url),fu=U(p.foto_url);
   document.querySelectorAll('video').forEach(v=>v.pause());
   const el=document.createElement('div');el.id='gxv';el.className='pv';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-label','Publicación de @'+(u.username||'usuario'));
-  const media=vu?`<video src="${E(vu)}" loop playsinline autoplay preload="auto"></video>`:fu?`<img src="${E(fu)}" alt="${E(p.titulo||'Imagen')}">`:`<div class="pv-txt">${E(p.descripcion||p.titulo||'')}</div>`;
+  const media=vu?`<video src="${E(vu)}" ${fu?`poster="${E(fu)}" `:''}loop playsinline autoplay preload="auto"></video>`:fu?`<img src="${E(fu)}" alt="${E(p.titulo||'Imagen')}">`:`<div class="pv-txt">${E(p.descripcion||p.titulo||'')}</div>`;
   const tag=p.circulo&&p.circulo!=='Público'?'Solo '+p.circulo:(p.categoria||'');
   el.innerHTML=`<div class="pv-media">${media}<div class="pv-pause" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></div></div>
 <div class="pv-top"><button class="pv-x" aria-label="Salir de la publicación">${CLOSE}</button><span class="pv-tag">${E(tag)}</span></div>
@@ -183,4 +185,29 @@ document.addEventListener('click',async e=>{
   let y0=null;
   document.addEventListener('touchstart',e=>{y0=open()&&e.target.closest&&e.target.closest('#sv')?e.touches[0].clientY:null},{passive:true});
   document.addEventListener('touchend',e=>{if(y0!==null&&open()&&e.changedTouches[0].clientY-y0>120&&typeof closeS==='function')closeS();y0=null},{passive:true});
+})();
+
+/* Xit en historias */
+(function(){
+  const FL='<svg class="act-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-x"/></svg>';
+  const _s=showS;
+  showS=function(){
+    _s();
+    try{const h=SV&&SV.l&&SV.l[SV.i];if(!h)return;const b=document.getElementById('svb');if(!b)return;
+      const mine=h.user_id===me.id,id=String(h.id);
+      if(mine){const c=document.createElement('span');c.className='gx-sxc';c.innerHTML=FL+'<b>…</b>';b.prepend(c);
+        sb.from('historia_xits').select('user_id',{count:'exact',head:true}).eq('historia_id',h.id).then(r=>{if(SV.l[SV.i]===h&&c.isConnected)c.querySelector('b').textContent=r.error?'0':fmt(r.count||0)});return}
+      const x=document.createElement('button');x.type='button';x.id='gxsx';x.className='gx-sx';x.setAttribute('aria-label','Dar Xit a la historia');x.innerHTML=FL;b.appendChild(x);
+      if(h._xm===undefined)sb.from('historia_xits').select('id').eq('historia_id',h.id).eq('user_id',me.id).limit(1).then(r=>{h._xm=!r.error&&!!(r.data&&r.data.length);if(x.isConnected)x.classList.toggle('on',h._xm)});
+      else x.classList.toggle('on',h._xm);
+      x.onclick=async e=>{e.stopPropagation();if(LOCK.has('sx'+id))return;LOCK.add('sx'+id);
+        try{
+          if(h._xm){const r=await sb.from('historia_xits').delete().eq('historia_id',h.id).eq('user_id',me.id);if(r.error)return toast(msg(r.error));h._xm=false}
+          else{const r=await sb.from('historia_xits').insert({historia_id:h.id,user_id:me.id});
+            if(r.error)return toast(/does not exist|schema cache/i.test(r.error.message||'')?'Xits de historias disponibles pronto':msg(r.error));
+            h._xm=true;x.classList.add('pop');setTimeout(()=>x.classList.remove('pop'),500)}
+          x.classList.toggle('on',h._xm);
+        }finally{LOCK.delete('sx'+id)}};
+    }catch(_){}
+  };
 })();

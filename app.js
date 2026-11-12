@@ -268,14 +268,28 @@ function cpick(){
   $$('#catPick .chip').forEach(b=>{const on=b.dataset.c===pcat;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on))});
 }
 function prevVid(i){$('#vn').textContent=i.files[0]?.name||'Sube o graba tu Xit'}
+function frameThumb(f){return new Promise(res=>{
+  const v=document.createElement('video'),u=URL.createObjectURL(f),done=x=>{URL.revokeObjectURL(u);res(x)};
+  v.muted=true;v.playsInline=true;v.preload='auto';v.src=u;
+  const t=setTimeout(()=>done(null),8000);
+  v.onerror=()=>{clearTimeout(t);done(null)};
+  v.onloadeddata=()=>{v.currentTime=Math.min(.5,(v.duration||1)/2)};
+  v.onseeked=()=>{try{const w=v.videoWidth,h=v.videoHeight;if(!w||!h){clearTimeout(t);return done(null)}
+    const k=Math.min(1,720/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);
+    c.getContext('2d').drawImage(v,0,0,c.width,c.height);c.toBlob(b=>{clearTimeout(t);done(b)},'image/jpeg',.82)}catch(_){clearTimeout(t);done(null)}};
+})}
 function publicar(){return once('pub','Subiendo tu Xit…',async()=>{
   const f=$('#vf').files[0];if(!f)return toast('Elige un video primero');
   if(!f.type.startsWith('video/'))return toast('Ese archivo no es un video');
   if(f.size>50*1048576)return toast('El video pesa más de 50 MB');
   const t=$('#cap').value.trim()||'Mi nuevo Xit',path=`${me.id}/${Date.now()}.${ext(f)}`;
   const url=await upl('posts',path,f);
-  const r=await sb.from('posts').insert({user_id:me.id,titulo:t.slice(0,80),descripcion:t,video_url:url,categoria:pcat,circulo:pc});
-  if(r.error){await sb.storage.from('posts').remove([path]);throw r.error}
+  let thumb=null,tpath=path.replace(/\.[^.]+$/,'')+'-t.jpg';
+  try{const bl=await frameThumb(f);if(bl)thumb=await upl('posts',tpath,new File([bl],'t.jpg',{type:'image/jpeg'}))}catch(_){thumb=null}
+  const row={user_id:me.id,titulo:t.slice(0,80),descripcion:t,video_url:url,categoria:pcat,circulo:pc};
+  let r=await sb.from('posts').insert(thumb?{...row,foto_url:thumb}:row);
+  if(r.error&&thumb)r=await sb.from('posts').insert(row);
+  if(r.error){await sb.storage.from('posts').remove([path,tpath]);throw r.error}
   $('#cap').value='';$('#vf').value='';$('#vn').textContent='Sube o graba tu Xit';cat='Todos';feedAt=0;
   toast(pc==='Público'?'Publicado':'Publicado. Solo lo ves tú ('+pc+')');go('feed');
 })}

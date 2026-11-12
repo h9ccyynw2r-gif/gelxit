@@ -82,3 +82,17 @@
 #svx:active{transform:scale(.9);background:rgba(255,255,255,.2)}
 #svx svg{width:20px;height:20px;stroke:#fff;stroke-width:2.2;fill:none;stroke-linecap:round}
 #svh{min-width:0}
+
+/* Miniatura + icono de play en tarjetas del feed */
+.post-media{position:relative}
+.gx-play{position:absolute;left:50%;top:50%;width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(10,12,14,.5);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.28);pointer-events:none;transition:opacity .2s}
+.gx-play svg{width:26px;height:26px;margin-left:3px}
+.post-media:has(video:not([paused])) .gx-play{opacity:0}
+/* Xit en historias */
+.gx-sx{width:46px;height:46px;min-height:46px;border-radius:50%;display:grid;place-items:center;flex:none;color:#fff;background:rgba(20,22,24,.62);border:1px solid rgba(255,255,255,.22);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:transform .15s,background .2s,color .2s}
+.gx-sx svg{width:24px;height:24px}
+.gx-sx.on{color:#08090a;background:linear-gradient(135deg,#a0fbfd,#6fb7ff);border-color:transparent}
+.gx-sx.pop{animation:gxsp .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes gxsp{0%{transform:scale(.7)}60%{transform:scale(1.35)}100%{transform:scale(1)}}
+.gx-sxc{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:rgba(20,22,24,.62);border:1px solid rgba(255,255,255,.22);font-size:14px}
+.gx-sxc svg{width:18px;height:18px;color:#a0fbfd}
