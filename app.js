@@ -16,7 +16,7 @@ const SCR={},LOCK=new Set();
 const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const U=u=>{try{const x=new URL(u,location.href);return /^https?:$/.test(x.protocol)?x.href:''}catch{return ''}};
 const cssUrl=u=>U(u).replace(/["\\()\s]/g,encodeURIComponent);
-const fmt=n=>{n=+n||0;if(n>=1e6)return (n/1e6).toFixed(n%1e6===0?0:1).replace(/\.0$/,'')+'M';if(n>=1e3)return (n/1e3).toFixed(n%1e3===0?0:1).replace(/\.0$/,'')+'K';return String(n)};
+const fmt=n=>{n=+n||0;if(n>=1e9)return (n/1e9).toFixed(n%1e9===0?0:1).replace(/\.0$/,'')+'B';if(n>=1e6)return (n/1e6).toFixed(n%1e6===0?0:1).replace(/\.0$/,'')+'M';if(n>=1e3)return (n/1e3).toFixed(n%1e3===0?0:1).replace(/\.0$/,'')+'K';return String(n)};
 const ext=f=>(f.name?.split('.').pop()||'bin').toLowerCase().replace(/[^a-z0-9]/g,'');
 const dayAgo=()=>new Date(Date.now()-864e5).toISOString();
 const isBanned=p=>!!p&&p.baneado===true&&(!p.ban_hasta||new Date(p.ban_hasta)>new Date());
