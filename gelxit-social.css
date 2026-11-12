@@ -1,0 +1,18 @@
+/* Listas de seguidores / siguiendo */
+.gx-fl{padding:16px 16px 20px;max-height:78vh;display:flex;flex-direction:column}
+.gx-fl-t{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:18px}
+.gx-fl-b{width:40px;height:40px;min-height:40px;border-radius:50%;font-size:22px;display:grid;place-items:center;background:var(--card2,var(--card));border:1px solid var(--bd);color:inherit}
+.gx-fl-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:4px;border-radius:999px;background:var(--card2,var(--card));border:1px solid var(--bd);margin-bottom:8px}
+.gx-fl-tabs button{height:38px;min-height:38px;border-radius:999px;font-weight:600;font-size:14px;color:var(--mut);background:transparent;border:0}
+.gx-fl-tabs button span{opacity:.75;margin-left:4px}
+.gx-fl-tabs button.on{background:var(--grad,linear-gradient(135deg,#a0fbfd,#6fb7ff));color:#08090a}
+.gx-fl-l{overflow-y:auto;min-height:120px;flex:1}
+.gx-fl-r{display:flex;align-items:center;gap:12px;width:100%;padding:10px 4px;text-align:left;background:none;border:0;color:inherit;border-radius:14px}
+.gx-fl-r:active{background:rgba(255,255,255,.06)}
+.gx-fl-n{flex:1;min-width:0;display:block}
+.gx-fl-n b{font-weight:600}
+.gx-fl-n small{display:block;color:var(--mut);font-size:13px}
+.gx-fl-m{font-style:normal;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--p-soft,rgba(160,251,253,.14));color:var(--p-text,#a0fbfd);white-space:nowrap}
+.gx-fl-e{text-align:center;color:var(--mut);padding:36px 12px}
+.gx-fl-c{background:none;border:0;color:inherit;font-size:inherit;min-height:0;padding:0}
+.gx-fl-c b{font-weight:700}

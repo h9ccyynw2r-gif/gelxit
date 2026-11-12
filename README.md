@@ -15,6 +15,7 @@ Red social de Xits (videos, fotos, audios), historias, lives, círculos y chat p
 | `gelxit-motion.js` / `.css` | Pantalla de inicio, animaciones de carga, jalar para actualizar, botón Xit de la barra |
 | `gelxit-panel.js` / `.css` | Panel de dueño: reportes, filtros, anuncio, apelaciones y modo mantenimiento |
 | `gelxit-chat.js` / `.css` | Borrar mensajes propios y quitar chats de la bandeja |
+| `gelxit-social.js` / `.css` | Listas de Seguidores y Siguiendo (con "Se siguen") y conteos reales |
 | `gelxit-logo.jpg` | Logo (también la imagen al compartir el enlace) |
 | `_headers` / `_redirects` | Caché, cabeceras de seguridad y bloqueo de la carpeta `sql/` en el sitio |
 | `sql/` | Scripts para pegar en Supabase (no forman parte del sitio) |
