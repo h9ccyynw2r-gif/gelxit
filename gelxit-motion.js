@@ -83,3 +83,22 @@ doXit=async function(id,b){
   },{passive:true});
 })();
 })();
+
+/* Botón Xit en la barra de abajo (reemplaza el botón flotante del feed) */
+(function(){
+  window.goXit=function(){
+    if(screen==='feed'){xitMode()}
+    else{xit=true;go('feed')}
+    setTimeout(syncXitNav,60);
+  };
+  function syncXitNav(){
+    const b=document.getElementById('nxit');if(!b)return;
+    const on=screen==='feed'&&!!xit;
+    b.classList.toggle('act',on);on?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current');
+    const hm=document.querySelector('#nav [data-g="feed"]');if(hm&&on){hm.classList.remove('act');hm.removeAttribute('aria-current')}
+  }
+  const _go=go;go=function(){const r=_go.apply(this,arguments);syncXitNav();return r};
+  const _df=drawFeed;drawFeed=function(){const r=_df.apply(this,arguments);syncXitNav();return r};
+})();
+
+window.goHome=function(){if(screen==='feed'&&xit){xit=false;go('feed');feed()}else{xit=false;go('feed')}};

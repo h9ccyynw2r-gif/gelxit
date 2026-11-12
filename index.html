@@ -26,12 +26,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <link rel="icon" href="gelxit-logo.jpg">
-<link rel="stylesheet" href="app.css?v=20261111e">
-<link rel="stylesheet" href="gelxit-fixes.css?v=20261111e">
-<link rel="stylesheet" href="gelxit-design.css?v=20261111e">
-<link rel="stylesheet" href="gelxit-viewer.css?v=20261111e">
-<link rel="stylesheet" href="gelxit-motion.css?v=20261111e">
-<link rel="stylesheet" href="gelxit-panel.css?v=20261111e">
+<link rel="stylesheet" href="app.css?v=20261111f">
+<link rel="stylesheet" href="gelxit-fixes.css?v=20261111f">
+<link rel="stylesheet" href="gelxit-design.css?v=20261111f">
+<link rel="stylesheet" href="gelxit-viewer.css?v=20261111f">
+<link rel="stylesheet" href="gelxit-motion.css?v=20261111f">
+<link rel="stylesheet" href="gelxit-panel.css?v=20261111f">
 </head>
 <body>
 <div id="gxsplash" aria-hidden="true"><div class="l"><span class="r"></span><span class="r r2"></span><img src="gelxit-logo.jpg" alt=""></div></div>
@@ -86,7 +86,6 @@
   <div id="chips" class="hs pb-2"></div>
   <div id="xban" class="hidden mx-4 mb-2 text-sm font-bold rounded-xl px-3 py-2" style="background:var(--card);border:1px solid var(--bd)"><span class="xd"></span> Pegando ahorita mismo</div>
   <div class="feed" id="feed"></div>
-  <button id="xbtn" onclick="xitMode()" class="absolute right-4 flex flex-col items-center justify-center rounded-full text-white font-extrabold text-sm shadow-xl z-10" style="bottom:130px;width:58px;height:58px;background:var(--p);box-shadow:0 6px 20px #7C3AEDaa"><svg class="ico"><use href="#i-x"/></svg>Xit</button>
 </section>
 
 <!-- BUSCAR -->
@@ -184,7 +183,8 @@
 <div id="plus" class="hidden absolute inset-0 z-40 flex items-end" style="background:#000a" onclick="if(event.target===this)this.classList.add('hidden')"><div class="w-full rounded-t-3xl p-5 pb-8 flex flex-col gap-2" style="background:var(--bg)"><b class="text-lg mb-1">Crear</b><button class="card p-4 text-left font-bold" onclick="pm('xit')"><svg class="ico"><use href="#i-x"/></svg> Hacer Xit</button><button class="card p-4 text-left font-bold" onclick="pm('hist')"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3 14 9l6 1-6 2-2 6-2-6-6-2 6-1z"/></svg> Subir Historia</button><button class="card p-4 text-left font-bold" onclick="pm('vid')"><svg class="ico" viewBox="0 0 24 24"><path d="m9 6 9 6-9 6z"/></svg> Subir Xit</button></div></div>
 <div id="sheet" class="hidden absolute inset-0 z-[70] flex items-end" style="background:#000a" onclick="if(event.target===this)this.classList.add('hidden')"><div id="sheetc" class="w-full rounded-t-3xl overflow-hidden" style="background:var(--bg)"></div></div>
 <nav id="nav">
-  <button data-g="feed" onclick="go('feed')"><svg class="ico" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</button>
+  <button data-g="feed" onclick="goHome()"><svg class="ico" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</button>
+  <button id="nxit" onclick="goXit()" aria-label="Xits"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-x"/></svg>Xit</button>
   <button data-g="search" onclick="go('search')"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 5 5"/></svg>Buscar</button>
   <button onclick="plusMenu()"><span class="plus">+</span></button>
   <button data-g="inbox" onclick="go('inbox')"><svg class="ico" viewBox="0 0 24 24"><path d="M4 5.5h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg>Inbox</button>
@@ -194,10 +194,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="app.js?v=20261111e"></script>
-<script src="gelxit-patch.js?v=20261111e"></script>
-<script src="gelxit-viewer.js?v=20261111e"></script>
-<script src="gelxit-motion.js?v=20261111e"></script>
-<script src="gelxit-panel.js?v=20261111e"></script>
+<script src="app.js?v=20261111f"></script>
+<script src="gelxit-patch.js?v=20261111f"></script>
+<script src="gelxit-viewer.js?v=20261111f"></script>
+<script src="gelxit-motion.js?v=20261111f"></script>
+<script src="gelxit-panel.js?v=20261111f"></script>
 </body>
 </html>

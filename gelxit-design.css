@@ -58,7 +58,7 @@ input:focus{border-color:rgba(160,251,253,.6)!important;box-shadow:0 0 0 4px rgb
 
 /* ---------- Barra inferior ---------- */
 #nav{height:78px;align-items:flex-start;padding:8px 6px calc(env(safe-area-inset-bottom) + 0px);background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(18px);border-top:1px solid var(--bd)}
-#nav button{width:62px;min-height:52px;height:52px;border-radius:16px;gap:4px;font-size:11px;font-weight:500;letter-spacing:0;color:var(--mut)!important}
+#nav button{width:min(62px,15.5vw);min-height:52px;height:52px;border-radius:16px;gap:4px;font-size:11px;font-weight:500;letter-spacing:0;color:var(--mut)!important}
 #nav button .ico{width:22px;height:22px;stroke-width:1.7}
 #nav button.act{color:var(--p-text)!important;background:var(--p-soft)}
 #nav button:has(.plus){background:none!important;width:auto}
