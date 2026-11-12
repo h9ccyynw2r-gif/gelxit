@@ -68,5 +68,5 @@ create policy "gx bloqueo no escribe" on public.messages as restrictive for inse
 -- ------------------------------------------------------------
 -- Comprobación: deben aparecer las 7 políticas
 select tablename, policyname, permissive from pg_policies
-where schemaname = 'public' and policyname like 'gx ban%' or policyname = 'gx bloqueo no escribe'
+where schemaname = 'public' and (policyname like 'gx ban%' or policyname = 'gx bloqueo no escribe')
 order by tablename;

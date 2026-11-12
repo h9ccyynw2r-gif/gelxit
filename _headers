@@ -31,3 +31,7 @@
   Cache-Control: no-cache
 /gelxit-motion.js
   Cache-Control: no-cache
+/gelxit-panel.css
+  Cache-Control: no-cache
+/gelxit-panel.js
+  Cache-Control: no-cache

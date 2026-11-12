@@ -26,11 +26,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <link rel="icon" href="gelxit-logo.jpg">
-<link rel="stylesheet" href="app.css?v=20261111b">
-<link rel="stylesheet" href="gelxit-fixes.css?v=20261111b">
-<link rel="stylesheet" href="gelxit-design.css?v=20261111b">
-<link rel="stylesheet" href="gelxit-viewer.css?v=20261111b">
-<link rel="stylesheet" href="gelxit-motion.css?v=20261111b">
+<link rel="stylesheet" href="app.css?v=20261111c">
+<link rel="stylesheet" href="gelxit-fixes.css?v=20261111c">
+<link rel="stylesheet" href="gelxit-design.css?v=20261111c">
+<link rel="stylesheet" href="gelxit-viewer.css?v=20261111c">
+<link rel="stylesheet" href="gelxit-motion.css?v=20261111c">
+<link rel="stylesheet" href="gelxit-panel.css?v=20261111c">
 </head>
 <body>
 <div id="gxsplash" aria-hidden="true"><div class="l"><span class="r"></span><span class="r r2"></span><img src="gelxit-logo.jpg" alt=""></div></div>
@@ -174,7 +175,9 @@
 <label class="block relative cursor-pointer flex-none"><input id="ebf" type="file" accept="image/*" class="hidden" onchange="prevImg(this,'bn2')"><div id="bn2" style="height:130px;background:var(--card)"></div><span class="absolute right-3 bottom-2 pill"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3"/></svg> Banner</span></label>
 <label class="flex justify-center cursor-pointer flex-none" style="margin-top:-44px"><input id="eaf" type="file" accept="image/*" class="hidden" onchange="prevImg(this,'av2')"><div id="av2" class="w-24 h-24 rounded-full flex items-center justify-center text-3xl text-white font-bold" style="border:4px solid var(--bg);background:linear-gradient(135deg,#6a00f4,#c026d3)"><svg class="ico ico-xl" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3"/></svg></div></label>
 <div class="px-6 py-4 flex flex-col gap-3 flex-none"><input id="enm" placeholder="Nombre"><input id="eus" placeholder="Usuario (@)" autocapitalize="none"><input id="ebi" placeholder="Bio" maxlength="150"><button class="btn mt-2" onclick="saveEdit()">Guardar</button></div></section>
-<section class="s items-center justify-center text-center px-8 gap-4" id="s-ban"><svg class="ico ico-xl" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 19 6v5c0 4.5-2.8 8-7 10-4.2-2-7-5.5-7-10V6z"/><path d="m9 12 2 2 4-4"/></svg><h2 class="text-2xl font-extrabold">Tu cuenta fue suspendida</h2><p style="color:var(--mut)">Si crees que fue un error, contacta a @angelxit.</p><button class="btn" onclick="go('home')">Volver</button></section>
+<section class="s items-center justify-center text-center px-6 gap-3 overflow-y-auto" id="s-ban"><svg class="ico ico-xl" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 19 6v5c0 4.5-2.8 8-7 10-4.2-2-7-5.5-7-10V6z"/><path d="m9 12 2 2 4-4"/></svg><h2 class="text-2xl font-extrabold">Tu cuenta fue suspendida</h2><p id="banwhy" style="color:var(--mut)">Si crees que fue un error, puedes enviar una apelación.</p>
+<div id="banap" class="w-full flex flex-col gap-2 mt-2"><textarea id="banmsg" maxlength="500" rows="4" placeholder="Cuéntanos qué pasó y por qué crees que fue un error" aria-label="Mensaje de apelación"></textarea><button class="btn" onclick="sendAppeal()">Enviar apelación</button></div>
+<p id="banst" class="text-sm hidden" style="color:var(--p-text)"></p><button class="btn2 w-full" onclick="logout()">Salir</button></section>
 
 <input id="sf" type="file" accept="image/*,video/*" class="hidden" onchange="upHist(this)">
 <div id="sv" class="absolute inset-0 z-[60] flex-col text-white" style="display:none;background:#000"><div id="svm" class="absolute inset-0"></div><div class="absolute inset-y-20 left-0 w-1/3" onclick="prevS()"></div><div class="absolute inset-y-20 right-0 w-2/3" onclick="nextS()"></div><div class="relative z-10 flex items-center gap-2 p-4" style="background:linear-gradient(#000a,transparent)"><div id="svh" class="flex-1 flex items-center gap-2"></div><button class="text-2xl" onclick="closeS()" aria-label="Cerrar"><svg class="ico" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="flex-1"></div><div id="svb" class="relative z-10 flex items-center gap-2 p-4" style="background:linear-gradient(transparent,#000a)"></div></div>
@@ -191,9 +194,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="app.js?v=20261111b"></script>
-<script src="gelxit-patch.js?v=20261111b"></script>
-<script src="gelxit-viewer.js?v=20261111b"></script>
-<script src="gelxit-motion.js?v=20261111b"></script>
+<script src="app.js?v=20261111c"></script>
+<script src="gelxit-patch.js?v=20261111c"></script>
+<script src="gelxit-viewer.js?v=20261111c"></script>
+<script src="gelxit-motion.js?v=20261111c"></script>
+<script src="gelxit-panel.js?v=20261111c"></script>
 </body>
 </html>

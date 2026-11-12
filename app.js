@@ -125,7 +125,7 @@ async function start(u){
     p=r.data;
     await sb.from('circulos').insert(['Familia','Escuela','Compas','Trabajo'].map(nombre=>({user_id:u.id,nombre,miembros:0})));
   }
-  if(isBanned(p)){await sb.auth.signOut();me=prof=null;go('ban');return false}
+  if(isBanned(p)){prof=p;try{banScreen(p)}catch(e){console.error(e)}go('ban');return false} /* se conserva la sesión para poder apelar; las políticas del servidor le impiden publicar */
   prof=p;picks=Array.isArray(p.gustos)?p.gustos:[];
   try{pins=JSON.parse(localStorage['pins'+u.id]||'[]').map(String)}catch{pins=[]}
   CFG=null;await loadCirc();subRT();loadCfg().then(applyCfg);
@@ -572,6 +572,7 @@ async function adminList(){
   const q=($('#aq').value||'').trim().replace(/^@/,'').toLowerCase().replace(/[%_,()\\]/g,'');
   let r=sb.from('profiles').select('id,username,nombre,avatar_url,foto_url,es_creador,baneado,ban_hasta,ban_motivo,verificado_identidad,verificado_premium,creado_en').order('creado_en',{ascending:false}).limit(25);
   if(q)r=r.ilike('username','%'+q+'%');
+  if(window.AF==='ban')r=r.eq('baneado',true);else if(window.AF==='ver')r=r.or('verificado_identidad.eq.true,verificado_premium.eq.true');else if(window.AF==='new')r=r.gt('creado_en',new Date(Date.now()-7*864e5).toISOString());
   const {data,error}=await r;if(error)return toast(msg(error));
   USERS=data;
   $('#alist').innerHTML=data.map(u=>`<div class="card p-3 flex flex-col gap-2"><div class="flex items-center gap-3">${av(u,44)}<div class="flex-1 min-w-0"><b>${E(u.nombre||u.username)}</b> ${vbadge(u)}<div class="text-sm" style="color:var(--mut)">@${E(u.username)}${isBanned(u)?' · Suspendido'+(u.ban_hasta?' hasta '+new Date(u.ban_hasta).toLocaleDateString('es-MX'):' permanente'):''}</div></div></div><div class="flex flex-wrap gap-2"><button class="pill" onclick="admVerify('${u.id}','identidad')">${u.verificado_identidad?'Quitar verificación':'Verificar'}</button><button class="pill" onclick="admVerify('${u.id}','premium')">${u.verificado_premium?'Quitar Premium':'Dar Premium'}</button>${isBanned(u)?`<button class="pill" onclick="admUnban('${u.id}')">Quitar suspensión</button>`:`<button class="pill" style="color:#ff6b6b" onclick="admBan('${u.id}')">Suspender</button>`}<button class="pill" onclick="verUser('${u.id}')">Ver perfil</button></div></div>`).join('')||'<p class="text-sm" style="color:var(--mut)">Sin resultados.</p>'+(data.length===25?'':'');
