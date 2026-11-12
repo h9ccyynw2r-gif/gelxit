@@ -7,25 +7,35 @@ Red social de Xits (videos, fotos, audios), historias, lives, círculos y chat p
 | Archivo | Para qué sirve |
 |---|---|
 | `index.html` | Pantallas, navegación y overlays |
-| `app.css` / `gelxit-fixes.css` | Sistema visual (color predeterminado: aqua `#a0fbfd`) |
-| `app.js` | Lógica: autenticación, feed, Xits, chat, historias, lives, perfiles, panel de dueño |
+| `app.js` / `app.css` | Lógica y estilos base |
+| `gelxit-fixes.css` | Correcciones de estilo (color predeterminado: aqua `#a0fbfd`) |
 | `gelxit-patch.js` | Ajustes que se cargan después de `app.js` (chat privado, ajustes, avatares) |
-| `supabase.sql` | Esquema y políticas de seguridad (parcial, ver nota) |
-| `supabase-security-check.sql` | Consulta de solo lectura para auditar la base real |
-| `supabase-seguridad-1.sql` | Permisos, funciones y Storage: endurecimiento sin cambio de comportamiento |
-| `supabase-seguridad-2.sql` | Aplica baneos y bloqueos en el servidor (probar con 2 cuentas) |
-| `supabase-hardening.sql` | Límites de tamaño y tipo de archivo por bucket |
-| `_headers` | Evita versiones viejas en caché y agrega cabeceras de seguridad |
+| `gelxit-design.css` | Diseño visual v3 (para volver al anterior, quitar su `<link>`) |
+| `gelxit-viewer.js` / `.css` | Visor de publicaciones a pantalla completa, comentarios, Xit en historias y miniaturas |
+| `gelxit-motion.js` / `.css` | Pantalla de inicio, animaciones de carga, jalar para actualizar, botón Xit de la barra |
+| `gelxit-panel.js` / `.css` | Panel de dueño: reportes, filtros, anuncio, apelaciones y modo mantenimiento |
+| `gelxit-logo.jpg` | Logo (también la imagen al compartir el enlace) |
+| `_headers` / `_redirects` | Caché, cabeceras de seguridad y bloqueo de la carpeta `sql/` en el sitio |
+| `sql/` | Scripts para pegar en Supabase (no forman parte del sitio) |
+
+Al cambiar un archivo, sube el número `?v=` en `index.html` para romper la caché.
+
+## SQL (orden en que se corren; todos se pueden repetir)
+
+1. `sql/supabase.sql` — esquema base (parcial, ver nota)
+2. `sql/supabase-seguridad-1.sql` — permisos, funciones y Storage
+3. `sql/supabase-hardening.sql` — límites de tamaño y tipo de archivo por bucket
+4. `sql/supabase-seguridad-2.sql` — baneos y bloqueos en el servidor
+5. `sql/supabase-comentarios.sql` — comentarios y Xits a comentarios
+6. `sql/supabase-panel.sql` — reportes, anuncios, apelaciones y modo mantenimiento
+7. `sql/supabase-historias-xits.sql` — Xits en historias
+
+`sql/supabase-security-check.sql` es una consulta de solo lectura para auditar la base real.
+Nota: `supabase.sql` no incluye todas las tablas (chats, mensajes, posts, follows…) ni las funciones `admin_*`; viven solo en el proyecto de Supabase.
 
 ## Publicar
 
-Sitio estático en Cloudflare Pages. Si el proyecto está conectado a GitHub, cada commit en `main` se despliega solo. Si se subió a mano, hay que volver a desplegar tras cada cambio.
-
-## Base de datos
-
-Pega `supabase.sql` en Supabase → SQL Editor. Es seguro correrlo más de una vez.
-Nota: no incluye todas las tablas (chats, mensajes, posts, follows, etc.) ni las funciones `admin_*`; esas viven solo en el proyecto de Supabase.
-Antes de abrir la app al público, corre `supabase-security-check.sql` y revisa las políticas de cada tabla.
+Sitio estático en Cloudflare Pages. Cada commit en `main` se despliega solo (tarda aprox. un minuto).
 
 ## Pendiente
 

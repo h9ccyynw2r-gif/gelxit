@@ -1,11 +1,16 @@
-# GELXIT — Entregables
+# GELXIT — Pendiente
 
-- [x] Conservar autenticación, perfiles, publicaciones, Xits, círculos, mensajes, historias, lives, uploads y panel de dueño.
-- [x] Definir identidad visual propia con tinta, carbón, crema, lima y violeta.
-- [x] Rediseñar botones, inputs, chips, tarjetas, navegación, toasts y estados de foco.
-- [x] Rediseñar feed/Xit y módulos de descubrimiento sin alterar su lógica de Supabase.
-- [x] Rediseñar perfiles, edición de perfil, verificación y cuadrícula de Xits.
-- [x] Rediseñar inbox, chat, composer y paneles inferiores.
-- [x] Ajustar layouts para viewport móvil y escritorio.
-- [ ] Validar con sesión autenticada las operaciones reales contra Supabase.
-- [ ] Publicar en el hosting conectado después de aprobación visual.
+## Seguridad
+- [ ] Cuenta privada aplicada desde el servidor (hoy solo se respeta en la app).
+- [ ] Revisar qué columnas de perfiles puede leer cualquiera.
+- [ ] Probar baneos, bloqueos y apelaciones con dos cuentas reales.
+- [ ] Cambiar el Tailwind por CDN a un CSS propio compilado.
+
+## Producto
+- [ ] Nuevo diseño del login (hay vista previa, falta aprobarla).
+- [ ] Barra de abajo: decidir si se quita Inbox para dejar el + al centro.
+- [ ] Barra de progreso real al subir videos (hoy es indeterminada).
+- [ ] Modo mantenimiento que también cierre la base de datos (hoy solo muestra aviso).
+
+## Código
+- [ ] Integrar `gelxit-patch.js` dentro de `app.js`.

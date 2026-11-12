@@ -8,9 +8,9 @@
   Cache-Control: no-cache
 /app.css
   Cache-Control: no-cache
-/gelxit-fixes.css
+/gelxit-*.css
   Cache-Control: no-cache
-/gelxit-patch.js
+/gelxit-*.js
   Cache-Control: no-cache
 
 # Seguridad: aplica a todo el sitio
@@ -19,19 +19,3 @@
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(self), microphone=(self), geolocation=(), payment=()
-/gelxit-design.css
-  Cache-Control: no-cache
-/gelxit-viewer.css
-  Cache-Control: no-cache
-/gelxit-viewer.js
-  Cache-Control: no-cache
-/gelxit-patch.js
-  Cache-Control: no-cache
-/gelxit-motion.css
-  Cache-Control: no-cache
-/gelxit-motion.js
-  Cache-Control: no-cache
-/gelxit-panel.css
-  Cache-Control: no-cache
-/gelxit-panel.js
-  Cache-Control: no-cache
