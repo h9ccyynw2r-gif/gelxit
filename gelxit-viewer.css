@@ -97,3 +97,6 @@
 .gx-sxc svg{width:18px;height:18px;color:#a0fbfd}
 
 .post-media.pv-on .gx-play{opacity:0}
+
+/* Las tarjetas no deben encogerse: antes se recortaba el pie (Xit / Comentar / título) */
+#feed .post,.feed .post{flex:none!important;min-height:max-content}
