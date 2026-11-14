@@ -7,3 +7,20 @@
 .gx-cd svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .gx-cd{color:rgba(255,255,255,.55)}
 :root[data-theme="light"] .gx-cd{color:rgba(0,0,0,.5)}
+
+/* Audios del chat */
+.gx-aud{display:flex;align-items:center;gap:10px;min-width:232px;padding:2px 0}
+.gx-ap{flex:none;width:42px;height:42px;min-height:42px;border-radius:50%;display:grid;place-items:center;border:0;background:rgba(255,255,255,.14);color:inherit;transition:transform .12s,background .15s}
+.gx-ap:active{transform:scale(.92)}
+.gx-ap svg{width:20px;height:20px;fill:currentColor;margin-left:1px}
+.bub.me .gx-ap{background:rgba(6,18,20,.16);color:#061214}
+.bub.me .gx-ap svg{margin-left:1px}
+.gx-wave{flex:1;min-width:0;height:34px;display:flex;align-items:center;gap:2px;cursor:pointer}
+.gx-wave i{flex:1;min-width:2px;border-radius:2px;background:currentColor;opacity:.32;transition:opacity .1s}
+.gx-wave i.f{opacity:1}
+.bub.ot .gx-wave i.f{background:var(--p-text,#a0fbfd)}
+.gx-aud.on .gx-ap{background:var(--grad,linear-gradient(135deg,#a0fbfd,#6fb7ff));color:#061214}
+.gx-at{flex:none;font-size:12px;font-variant-numeric:tabular-nums;opacity:.85;min-width:62px;text-align:right}
+.gx-asp{flex:none;min-height:26px;padding:0 8px;border-radius:999px;border:0;background:rgba(255,255,255,.12);color:inherit;font-size:11px;font-weight:700}
+.bub.me .gx-asp{background:rgba(6,18,20,.14);color:#061214}
+.bub:has(.gx-aud){padding:8px 12px;max-width:88%}
