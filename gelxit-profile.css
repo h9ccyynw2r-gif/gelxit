@@ -1,0 +1,11 @@
+/* Pestañas del perfil */
+.gx-ptabs{display:grid;grid-template-columns:repeat(3,1fr);margin:6px 4px 6px;border-bottom:1px solid var(--bd)}
+.gx-ptabs button{position:relative;display:flex;align-items:center;justify-content:center;gap:6px;min-height:46px;background:none;border:0;color:var(--mut);font-size:13px;font-weight:600}
+.gx-ptabs svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.gx-ptabs button.on{color:var(--tx)}
+.gx-ptabs button.on svg{color:var(--p-text)}
+.gx-ptabs button.on:after{content:"";position:absolute;left:18%;right:18%;bottom:-1px;height:3px;border-radius:3px;background:var(--grad,linear-gradient(135deg,#a0fbfd,#6fb7ff))}
+.gx-pl{grid-column:1/-1;text-align:center;color:var(--mut);padding:44px 24px;font-size:14px;line-height:1.5}
+.gx-pl b{display:block;color:var(--tx);font-size:17px;margin-bottom:4px}
+@media(max-width:360px){.gx-ptabs span{display:none}}
+#adm .btn2{display:flex;align-items:center;justify-content:center;gap:8px}

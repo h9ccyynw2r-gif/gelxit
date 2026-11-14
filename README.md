@@ -17,6 +17,8 @@ Red social de Xits (videos, fotos, audios), historias, lives, círculos y chat p
 | `gelxit-chat.js` / `.css` | Borrar mensajes propios y quitar chats de la bandeja |
 | `gelxit-social.js` / `.css` | Listas de Seguidores y Siguiendo (con "Se siguen") y conteos reales |
 | `gelxit-auth.js` / `.css` | Bienvenida, entrar, crear cuenta y recuperar (mostrar contraseña y medidor de seguridad) |
+| `gelxit-feed.js` / `.css` | Botones laterales del feed (Xit, comentar, enviar, guardar) y guardados |
+| `gelxit-profile.js` / `.css` | Pestañas del perfil: Publicaciones, Xits y Guardados |
 | `gelxit-logo.jpg` | Logo (también la imagen al compartir el enlace) |
 | `_headers` / `_redirects` | Caché, cabeceras de seguridad y bloqueo de la carpeta `sql/` en el sitio |
 | `sql/` | Scripts para pegar en Supabase (no forman parte del sitio) |
@@ -33,6 +35,7 @@ Al cambiar un archivo, sube el número `?v=` en `index.html` para romper la cach
 6. `sql/supabase-panel.sql` — reportes, anuncios, apelaciones y modo mantenimiento
 7. `sql/supabase-historias-xits.sql` — Xits en historias
 8. `sql/supabase-chat-borrar.sql` — borrar mensajes y chats
+9. `sql/supabase-guardados.sql` — guardar publicaciones
 
 `sql/supabase-security-check.sql` es una consulta de solo lectura para auditar la base real.
 Nota: `supabase.sql` no incluye todas las tablas (chats, mensajes, posts, follows…) ni las funciones `admin_*`; viven solo en el proyecto de Supabase.
