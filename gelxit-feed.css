@@ -1,0 +1,13 @@
+/* Feed estilo Instagram: botones laterales */
+.gx-rail{position:absolute;right:10px;bottom:16px;display:flex;flex-direction:column;gap:14px;z-index:3}
+.gx-rb{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:0;padding:0;background:none;border:0;color:#fff;font-size:11px;font-weight:600;text-shadow:0 1px 6px rgba(0,0,0,.7);-webkit-tap-highlight-color:transparent}
+.gx-rb svg{box-sizing:content-box;width:24px;height:24px;padding:11px;border-radius:50%;background:rgba(14,16,18,.55);border:1px solid rgba(255,255,255,.16);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s,background .2s,color .2s}
+.gx-rb:active svg{transform:scale(.88)}
+.gx-rb.liked svg{background:linear-gradient(135deg,#a0fbfd,#6fb7ff);color:#08090a;border-color:transparent}
+.gx-rb.on svg{background:rgba(160,251,253,.2);color:#a0fbfd;border-color:rgba(160,251,253,.55);fill:#a0fbfd}
+.gx-rb.pop svg{animation:gxrp .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes gxrp{0%{transform:scale(.7)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+/* Con el rail, el botón de pantalla completa de la esquina sobra */
+.post[data-open] .post-media:after{display:none}
+/* El play central y el rail no se estorban */
+.post-media .gx-play{left:calc(50% - 22px)}
