@@ -13,3 +13,6 @@
 
 ## Código
 - [ ] Integrar `gelxit-patch.js` dentro de `app.js`.
+
+- Notificaciones se calculan en el cliente (xits, comentarios y follows hacia tus publicaciones); si crece, mover a tabla `notificaciones` con triggers.
+- Color de acento y "visto" de notificaciones viven en localStorage (por dispositivo).
